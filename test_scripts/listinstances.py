@@ -13,7 +13,9 @@ sess = session.Session(auth=auth)
 
 nova = client.Client(2, session=sess)
 
-servers = nova.servers.list(detailed=True)
+search_opts = { 'all_tenants': True, }
+
+servers = nova.servers.list(detailed=True, search_opts=search_opts)
 for s in servers:
 	print s, nova.flavors.get(s.flavor['id'])
 
