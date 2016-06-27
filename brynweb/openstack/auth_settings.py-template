@@ -1,0 +1,9 @@
+AUTHENTICATION = {'bham'    : {'AUTH_NAME' : '',
+                               'AUTH_PASSWORD' : '',
+                               'TENANT_NAME' : '',
+                               'AUTH_URL' : 'http://birmingham.climb.ac.uk:5000/v2.0/'},
+                  'cardiff' : {'AUTH_NAME' : '',
+                               'AUTH_PASSWORD' : '',
+                               'TENANT_NAME'   : '',
+                               'AUTH_URL'      : 'http://cardiff.climb.ac.uk:5000' }}
+
