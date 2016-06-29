@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'bootstrap3',
     'reporting',
     'userdb',
+    'home',
 ]
 
 MIDDLEWARE_CLASSES = [

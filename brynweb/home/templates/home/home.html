@@ -1,0 +1,22 @@
+{% load bootstrap3 %}
+<html>
+        <head>
+                <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+                <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+		<title>Home</title>
+	</head>
+	<body>
+		<h1>Sign-in</h1>
+                <form action="{% url "login" %}" method="post" class="form">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    {% buttons %}
+                        <button type="submit" class="btn btn-primary">
+                            {% bootstrap_icon "star" %} Login
+                        </button>
+                    {% endbuttons %}
+                </form>
+		<h1>Register</h1>
+		<a href="/user/register">Register for a new CLIMB account</a>
+	</body>
+</html>
