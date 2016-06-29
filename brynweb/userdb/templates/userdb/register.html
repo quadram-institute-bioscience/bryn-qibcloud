@@ -1,5 +1,14 @@
 {% extends "base.html" %}
-{% load bootstrap3 %}
+{% load bootstrap3 static %}
+
+{% block extra_js %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+  <script src="{% static 'userdb/js/institution_typeahead.js' %}"></script>
+{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'userdb/css/typeaheadjs.css' %}">
+{% endblock %}
 
 {% block full_jumbo %}
   <div class="jumbotron bg-grey">

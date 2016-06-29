@@ -1,8 +1,11 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.core.urlresolvers import reverse
-from forms import CustomUserCreationForm, GroupProfileForm
 from django.contrib import messages
+
+from .forms import CustomUserCreationForm, GroupProfileForm
+from .models import Institution
+
 
 def register(request):
     if request.method == 'POST':
@@ -23,3 +26,15 @@ def register(request):
     return render(request, 'userdb/register.html',
                   {'userform': userform,
                    'profileform' : profileform})
+
+
+def institution_typeahead(request):
+    q = request.GET.get('q', '')
+    if q:
+        matches = (Institution.objects
+                   .filter(name__icontains=q)
+                   .values_list('name', flat=True)[:10])
+    else:
+        matches = Institution.objects.all().values_list('name', flat=True)
+    data = list(matches)
+    return JsonResponse(data, safe=False)
