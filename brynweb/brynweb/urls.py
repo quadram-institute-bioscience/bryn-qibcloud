@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^user/', include('userdb.urls')),
     url(r'^reports/', include('reporting.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'', include('home.urls')),
 ]
