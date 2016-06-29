@@ -1,33 +1,46 @@
+{% extends "base.html" %}
 {% load bootstrap3 %}
-<html>
-	<head>
-		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-	</head>
-	<body>
-		<h1>Register for a CLIMB group account</h1>
 
-		<p>To register for a CLIMB group account, you must:</p>
-		<ul>
-			<li>Be a UK academic or public sector worker working on microbial genomics
-			<li>Run your own research group (i.e. be a principal investigator)
-			<li>Have a .ac.uk (or .gov.uk or .nhs.uk email account)
-			<li>Agree to our service terms and conditions
-		</ul>
+{% block full_jumbo %}
+  <div class="jumbotron bg-grey">
+    <div class="container">
+      <h1>Register for a CLIMB group account</h1>
+    </div>
+  </div>
+{% endblock %}
 
-		<p>Group logins are subject to verification by CLIMB staff.
-		Once you have a group login you can invite your group members.
-		</p>
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <form action="?" method="post" class="form">
+            {% csrf_token %}
+            {% bootstrap_form userform %}
+            {% bootstrap_form profileform %}
+            {% buttons %}
+              <button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Submit</button>
+            {% endbuttons %}
+        </form>
+      </div>
+      <div class="col-md-5 col-md-offset-1">
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            To register for a CLIMB group account, you must:
+          </div>
+          <div class="panel-body">
+            <ul>
+              <li>Be a UK academic or public sector worker working on microbial genomics</li>
+              <li>Run your own research group (i.e. be a principal investigator)</li>
+              <li>Have a .ac.uk (or .gov.uk or .nhs.uk email account)</li>
+              <li>Agree to our service terms and conditions</li>
+            </ul>
 
-		<form action="?" method="post" class="form">
-		    {% csrf_token %}
-                    {% bootstrap_form userform %}
-                    {% bootstrap_form profileform %}
-		    {% buttons %}
-			<button type="submit" class="btn btn-primary">
-			    {% bootstrap_icon "star" %} Submit
-			</button>
-		    {% endbuttons %}
-		</form>
-	</body>
-</html>
+            <p>Group logins are subject to verification by CLIMB staff.
+            Once you have a group login you can invite your group members.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
