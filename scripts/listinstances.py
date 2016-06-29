@@ -1,14 +1,17 @@
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from novaclient import client
 from keystoneauth1 import loading
 from keystoneauth1 import session
 from pprint import pprint
 from keystoneclient.v2_0 import client as keystoneclient
-import settings
+from brynweb.openstack import auth_settings
+from collections import defaultdict
 import sys
 
 def get_servers(region):
-	authsettings = settings.AUTHENTICATION[region]
+	authsettings = auth_settings.AUTHENTICATION[region]
 
 	loader = loading.get_plugin_loader('password')
 	auth = loader.load_from_options(auth_url=authsettings['AUTH_URL'],
@@ -24,24 +27,34 @@ def get_servers(region):
 
 	servers = nova.servers.list(detailed=True, search_opts=search_opts)
 
-	tenants = {}
+	"""tenants = {}
 	for s in servers:
 		if s.tenant_id not in tenants:
 			tenants[s.tenant_id] = keystone.tenants.get(s.tenant_id)
 		s.tenant = tenants[s.tenant_id]
-
+	"""
 	users = {}
 	for s in servers:
 		if s.user_id not in users:
 			users[s.user_id] = keystone.users.get(s.user_id)
 		s.user = users[s.user_id]
 
-
 	return servers
 
 servers = get_servers(sys.argv[1])
+
+users = defaultdict(list)
+
 for s in servers:
-	print s.name, s.tenant, s.user, s._info['OS-EXT-SRV-ATTR:host']
+	users["%s <%s>" % (s.user.name, s.user.email)].append(s)
+
+for u, serverlist in users.iteritems():
+	print "%s\n" % (u,)
+	for s in serverlist:
+		print s.name
+
+	print
+
 ##user_id
 	##s, nova.flavors.get(s.flavor['id'])
 ##	print nova.flavors.list()

@@ -1,0 +1,33 @@
+{% load bootstrap3 %}
+<html>
+	<head>
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+	</head>
+	<body>
+		<h1>Register for a CLIMB group account</h1>
+
+		<p>To register for a CLIMB group account, you must:</p>
+		<ul>
+			<li>Be a UK academic or public sector worker working on microbial genomics
+			<li>Run your own research group (i.e. be a principal investigator)
+			<li>Have a .ac.uk (or .gov.uk or .nhs.uk email account)
+			<li>Agree to our service terms and conditions
+		</ul>
+
+		<p>Group logins are subject to verification by CLIMB staff.
+		Once you have a group login you can invite your group members.
+		</p>
+
+		<form action="?" method="post" class="form">
+		    {% csrf_token %}
+                    {% bootstrap_form userform %}
+                    {% bootstrap_form profileform %}
+		    {% buttons %}
+			<button type="submit" class="btn btn-primary">
+			    {% bootstrap_icon "star" %} Submit
+			</button>
+		    {% endbuttons %}
+		</form>
+	</body>
+</html>
