@@ -33,6 +33,10 @@ h2, .h2, h3, .h3 {
   color: #bfc4c7;
 }
 
+.navbar-default .navbar-nav>li>a:hover {
+  color: #fff;
+}
+
 .panel-primary {
   border-color: #8a7967;
 }
