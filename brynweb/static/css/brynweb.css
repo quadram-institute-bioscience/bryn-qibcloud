@@ -1,3 +1,5 @@
+/* --- TYPOGRAPHY --- */
+
 body {
   font-family: 'Roboto';
 }
@@ -5,6 +7,9 @@ body {
 h2, .h2, h3, .h3 {
   color: #d07232;
 }
+
+
+/* --- JUMBOTRON --- */
 
 .jumbotron {
   background: #2d728b;
@@ -16,6 +21,9 @@ h2, .h2, h3, .h3 {
   color: #c2d5dc;
 }
 
+
+/* --- HEADER --- */
+
 .header-logo {
   width: 300px;
   position: absolute;
@@ -23,6 +31,16 @@ h2, .h2, h3, .h3 {
   left: 100px;
   z-index: 2000;
 }
+
+
+/* --- BUTTONS --- */
+
+.btn i.fa {
+  margin-right: 0.5em;
+}
+
+
+/* --- NAV --- */
 
 .navbar {
   background-color: #2d3e48;
