@@ -131,6 +131,12 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
+
+# django-phonenumber-field settings
+
+PHONENUMBER_DEFAULT_REGION = 'GB'
+
+
 # django-bootstrap settings
 
 BOOTSTRAP3 = {
