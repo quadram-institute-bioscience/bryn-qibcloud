@@ -10,6 +10,8 @@ class Institution(Model):
 
 
 class GroupProfile(Model):
+    user = OneToOneField(User, on_delete=CASCADE)
+
     position = CharField(max_length=50)
     department = CharField(max_length=50)
     institution = CharField(max_length=100)
@@ -21,4 +23,3 @@ class GroupProfile(Model):
     def __unicode__(self):
         return self.user.get_full_name()
 
-User.group = property(lambda u: GroupProfile.objects.get_or_create(user=u)[0])

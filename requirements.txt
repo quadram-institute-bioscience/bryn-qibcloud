@@ -4,3 +4,5 @@ python-keystoneclient
 keystoneauth1
 django-bootstrap3
 django-phonenumber-field
+uswgi
+python-glanceclient

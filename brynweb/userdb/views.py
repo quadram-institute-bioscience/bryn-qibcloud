@@ -13,8 +13,9 @@ def register(request):
         profileform = GroupProfileForm(request.POST)
         if userform.is_valid() and profileform.is_valid():
             user = userform.save()
-            profileform.user = user
-            profileform.save()
+            profile = profileform.save(commit=False)
+            profile.user = user
+            profile.save()
 
             messages.success(request, 'Thank you for registering. Your request will be approved by an administrator and you will receive an email with further instructions')
 

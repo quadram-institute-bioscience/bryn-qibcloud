@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'reporting',
     'userdb',
     'home',
+    'discourse',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -183,3 +184,10 @@ BOOTSTRAP3 = {
         'inline': 'bootstrap3.renderers.InlineFieldRenderer',
     },
 }
+
+## DISCOURSE
+
+DISCOURSE_BASE_URL = 'https://discourse.climb.ac.uk'
+DISCOURSE_SSO_SECRET = '54quWQYVdnMt8XmRS5qBKpJk'
+
+LOGIN_URL = '/'
