@@ -1,14 +1,21 @@
 from django.shortcuts import render
 from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponse
+from userdb.forms import InvitationForm
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login
+from django.contrib import messages
 
 # Create your views here.
 
 def home(request):
-	form = AuthenticationForm()
-	context = {'form' : form}
-	return render(request, 'home/home.html', context)
+    if not request.user.is_authenticated():
+        form = AuthenticationForm()
+        context = {'form' : form}
+        return render(request, 'home/home.html', context)
+    else:
+        invite = InvitationForm(request.user)
+        context = {'invite' : invite}
+        return render(request, 'home/dashboard.html', context)
 
 def loginpage(request):
     username = request.POST['username']
@@ -17,9 +24,10 @@ def loginpage(request):
     if user is not None:
         if user.is_active:
             login(request, user)
-            return HttpResponse('logged in')
+            messages.success(request, 'You have been successfully logged in.')
+            return HttpResponseRedirect('/')
         else:
-            return HttpResponse('disabled account')
+            messages.error(request, 'Sorry your account is disabled.')
     else:
-        return HttpResponse('invalid login')
-
+        messages.error(request, 'Invalid username or password.')
+    return HttpResponseRedirect('/')
