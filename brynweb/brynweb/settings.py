@@ -186,3 +186,5 @@ DISCOURSE_BASE_URL = 'https://discourse.climb.ac.uk'
 DISCOURSE_SSO_SECRET = '54quWQYVdnMt8XmRS5qBKpJk'
 
 LOGIN_URL = '/'
+
+SECRET_KEY = 'dfsd7y8udiskhfsdf78syf7fydsifsidufsi'
