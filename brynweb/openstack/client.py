@@ -3,6 +3,7 @@ from keystoneauth1 import loading
 from keystoneauth1 import session
 from keystoneclient.v2_0 import client as keystoneclient
 from glanceclient import Client
+from neutronclient.v2_0 import client as neutronclient
 
 import auth_settings
 import sys
@@ -14,6 +15,7 @@ class OpenstackClient:
         self.have_keystone = False
         self.have_nova = False 
         self.have_glance = False
+        self.have_neutron = False
         self.authsettings = auth_settings.AUTHENTICATION[self.region]
 
     def get_sess(self):
@@ -51,7 +53,17 @@ class OpenstackClient:
         if not self.have_glance:
             sess = self.get_sess()
             self.glance = Client('2', session=sess)
+            self.have_glance = True
+
         return self.glance
+
+    def get_neutron(self):
+        if not self.have_neutron:
+            sess = self.get_sess()
+            self.neutron = neutronclient.Client(session=sess)
+            self.have_neutron = True
+
+        return self.neutron
 
     def get_servers(self):
         nova = get_nova(self.region)
