@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block full_jumbo %}
+	<div class="jumbotron">
+		<div class="container">
+                	<h1>Dashboard</h1>
+		</div>
+	</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-6">
+			{% bootstrap_messages %}
+
+                        <h2>Servers</h2>
+
+                        <p>Button to launch a server</p>
+
+                        <h2>Invite users</h2>
+
+                        <form action="{% url "invite" %}" method="post" class="form">
+                            {% csrf_token %}
+                            {% bootstrap_form invite %}
+                            {% buttons %}
+                                <button type="submit" class="btn btn-primary">
+                                    {% bootstrap_icon "star" %} Invite User
+                                </button>
+                            {% endbuttons %}
+                        </form>
+		</div>
+	</div>
+</div>
+{% endblock %}
