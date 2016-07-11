@@ -77,3 +77,32 @@ The CLIMB Project""" % (self.made_by.first_name, self.to_team.name, self.message
 
     def __str__(self):
         return "%s to %s" % (self.email, self.to_team)
+
+class UserProfile(Model):
+    user = OneToOneField(User, on_delete=CASCADE)
+    validation_link = UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    email_validated = BooleanField(default=False)
+
+    def send_validation_link(self, user):
+        self.user = user
+        self.email_validated = False
+        self.save()
+
+        send_mail('CLIMB Registration: Please confirm your email address',
+                   """Hi %s!
+
+You (or someone pretending to be you) recently signed up for a user
+account on CLIMB:
+
+Before we can go any further, please validate this is a real
+email address by visiting the following link:
+
+http://bryn.climb.ac.uk%s
+
+
+Best regards
+
+The CLIMB Project""" % (user.first_name, reverse('validate-email', args=[self.validation_link,])),
+                        'noreply@discourse.climb.ac.uk',
+                        [user.email], fail_silently=False)
+

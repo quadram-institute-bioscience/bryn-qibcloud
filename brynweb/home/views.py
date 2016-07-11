@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.contrib.auth.forms import AuthenticationForm
 from userdb.forms import InvitationForm
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.core.urlresolvers import reverse
 
 # Create your views here.
 
@@ -31,3 +32,9 @@ def loginpage(request):
     else:
         messages.error(request, 'Invalid username or password.')
     return HttpResponseRedirect('/')
+
+def logoutview(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('home'))
+    
+    

@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from .forms import CustomUserCreationForm, TeamForm, InvitationForm
-from .models import Institution, Team, TeamMember, Invitation
+from .models import Institution, Team, TeamMember, Invitation, UserProfile
 
 
 def register(request):
@@ -14,6 +14,9 @@ def register(request):
         teamform = TeamForm(request.POST)
         if userform.is_valid() and teamform.is_valid():
             user = userform.save()
+
+            profile = UserProfile()
+            profile.send_validation_link(user)
 
             # add team
             team = teamform.save(commit=False)
@@ -98,4 +101,11 @@ def accept_invite(request, uuid):
 
     return render(request, 'userdb/user-register.html', {'form' : userform})
 
+
+def validate_email(request, uuid):
+    profile = get_object_or_404(UserProfile, validation_link=uuid)
+    profile.email_validated = True
+    profile.save()
+    messages.success(request, 'Thank you for confirming your email address, you can now log-in to get started.')
+    return HttpResponseRedirect(reverse('home'))
 
