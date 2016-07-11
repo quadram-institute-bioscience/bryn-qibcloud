@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.contrib.auth.models import Group
 
 from .forms import CustomUserCreationForm, GroupProfileForm
 from .models import Institution
@@ -13,8 +14,12 @@ def register(request):
         profileform = GroupProfileForm(request.POST)
         if userform.is_valid() and profileform.is_valid():
             user = userform.save()
+            group = Group()
+            group.name = "%s research group" % (user.last_name)
+            group.save()
+            group.user_set.add(user)
             profile = profileform.save(commit=False)
-            profile.user = user
+            profile.group = group
             profile.save()
 
             messages.success(request, 'Thank you for registering. Your request will be approved by an administrator and you will receive an email with further instructions')

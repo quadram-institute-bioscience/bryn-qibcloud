@@ -8,12 +8,12 @@ from .models import GroupProfile
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
-        fields = ("username", "email", "password1", "password2")
+        fields = ("username", "first_name", "last_name", "email", "password1", "password2")
         model = User
 
 
 class GroupProfileForm(ModelForm):
     class Meta:
         model = GroupProfile
-        exclude = ('user',)
+        exclude = ('group',)
         widgets = {'phone_number': PhoneNumberInternationalFallbackWidget}

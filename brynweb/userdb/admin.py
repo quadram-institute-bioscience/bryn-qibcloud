@@ -1,6 +1,6 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import User
+from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
+from django.contrib.auth.models import Group
 
 from userdb.models import GroupProfile
 
@@ -9,10 +9,10 @@ class GroupProfileInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'group'
 
-# Define a new User admin
-class UserAdmin(BaseUserAdmin):
+# Define a new Group admin
+class GroupAdmin(BaseGroupAdmin):
     inlines = (GroupProfileInline, )
 
-# Re-register UserAdmin
-admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
+# Re-register GroupAdmin
+admin.site.unregister(Group)
+admin.site.register(Group, GroupAdmin)
