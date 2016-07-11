@@ -50,6 +50,8 @@ class Invitation(Model):
         self.accepted = False
         self.save()
 
+        kwargs = {'uuid':self.uuid}
+
         send_mail('Invitation to join a CLIMB group',
                   """Hi there!
 
@@ -69,7 +71,7 @@ http://bryn.climb.ac.uk%s
 
 Best regards
 
-The CLIMB Project""" % (self.made_by.first_name, self.to_team.name, self.message, reverse('accept-invite', self.uuid)),
+The CLIMB Project""" % (self.made_by.first_name, self.to_team.name, self.message, reverse('accept-invite', args=[self.uuid,])),
                     'noreply@discourse.climb.ac.uk',
                     [self.email], fail_silently=False)
 

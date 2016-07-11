@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -43,8 +43,6 @@ def invite(request):
     if request.method == 'POST':
         form = InvitationForm(request.user, request.POST)
         if form.is_valid():
-            print form.cleaned_data['email']
-            print form.cleaned_data['to_team']
             if Invitation.objects.filter(email=form.cleaned_data['email'], to_team=form.cleaned_data['to_team']):
                 messages.error(request, 'User has already been invited to this team.')
             else:
@@ -69,6 +67,35 @@ def institution_typeahead(request):
 
 
 def accept_invite(request, uuid):
-    return HttpResponse(uuid)
+    i = get_object_or_404(Invitation, uuid=uuid)
+    if request.method == 'POST':
+        userform = CustomUserCreationForm(request.POST)
+        if userform.is_valid():
+            user = userform.save()
+
+            # add team member
+            member = TeamMember()
+            member.team = i.to_team
+            member.user = user
+            member.is_admin = False
+            member.save()
+
+            i.accepted = True
+            i.save()
+
+            messages.success(request, 'Congratulations you are now a member of %s. Please log-in to get started.' % (member.team))
+            return HttpResponseRedirect(reverse('home'))
+        else:
+            messages.error(request, 'Invalid values supplied for form.')
+    else:
+        i = Invitation.objects.get(uuid=uuid)
+        if i.accepted:
+            messages.error(request, 'This invitation has already been claimed!')
+            return HttpResponseRedirect(reverse('home'))
+
+        userform = CustomUserCreationForm()
+        userform.initial['email'] = i.email
+
+    return render(request, 'userdb/user-register.html', {'form' : userform})
 
 
