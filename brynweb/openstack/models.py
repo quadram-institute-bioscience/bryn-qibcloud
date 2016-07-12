@@ -23,6 +23,9 @@ class Tenant(Model):
         return "%s - %s" % (self.get_tenant_name(), self.region)
 
 class RegionSettings(Model):
-    region = ForeignKey(Region)
+    region = OneToOneField(Region)
     gvl_image_id = CharField(max_length=50)
+
+    def __str__(self):
+        return str(self.region)
 

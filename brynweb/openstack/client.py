@@ -4,11 +4,13 @@ from keystoneauth1 import session
 from keystoneclient.v2_0 import client as keystoneclient
 from glanceclient import Client
 from neutronclient.v2_0 import client as neutronclient
+from cinderclient import client as cinderclient
 
 import auth_settings
 import sys
 
-def get_admin_credentials():
+def get_admin_credentials(region):
+    authsettings = auth_settings.AUTHENTICATION[region]
     return {'username' : authsettings['AUTH_NAME'],
             'password' : authsettings['AUTH_PASSWORD'],
             'project_name' : authsettings['TENANT_NAME']}
@@ -21,6 +23,7 @@ class OpenstackClient:
         self.have_nova = False 
         self.have_glance = False
         self.have_neutron = False
+        self.have_cinder = False
 
         self.authsettings = auth_settings.AUTHENTICATION[self.region]
         self.authsettings['AUTH_NAME'] = username
@@ -70,6 +73,14 @@ class OpenstackClient:
             self.have_neutron = True
 
         return self.neutron
+
+    def get_cinder(self):
+        if not self.have_cinder:
+            sess = self.get_sess()
+            self.cinder = cinderclient.Client('2', session=sess)
+            self.have_cinder = True
+
+        return self.cinder
 
     def get_servers(self):
         nova = self.get_nova(self.region)

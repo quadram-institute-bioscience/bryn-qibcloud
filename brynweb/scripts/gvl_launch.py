@@ -4,6 +4,7 @@ from openstack.models import Tenant
 from userdb.models import Team, Region
 import sys
 import yaml
+import time
 
 def add_keypair(nova):
     try:
@@ -21,8 +22,10 @@ def launch_gvl(tenant, password):
     nova = client.get_nova()
     key_name = add_keypair(nova)
 
+    server_name = "bryn:%s group server" % (tenant.team.name)
+
     user_specific_data = {'cloud_name'   : 'CLIMB',
-                          'cluster_name' : '%s group server' % (tenant.team.name),
+                          'cluster_name' : server_name,
                           'key_name'     : key_name,
                           'password'     : password,
                           'freenxpass'   : password}
@@ -93,9 +96,9 @@ cluster_templates:
 
     fl = nova.flavors.find(name='climb.group')
 
-    for i in client.get_glance().images.list():
-        if i.name == 'GVL 4.1.0':
-            image_id = i.id 
+    #for i in client.get_glance().images.list():
+    #    if i.name == 'GVL 4.1.0':
+    #        image_id = i.id 
 
     #for n in nova.networks.list():
     #    print n.id, n.project_id
@@ -103,9 +106,30 @@ cluster_templates:
     #        if n.tenant_id == default_tenant_id:
     #            print n
 
-    server = nova.servers.create('test-gvl',
+    cinder = client.get_cinder()
+
+    volume = cinder.volumes.create(imageRef=tenant.region.regionsettings.gvl_image_id,
+                                   name="bryn:%s boot volume" % (server_name,),
+                                   size=120)
+    cinder.volumes.set_bootable(volume, True)
+
+    print volume.id
+    for n in xrange(10):
+        v = cinder.volumes.get(volume.id)
+        print v.status
+        time.sleep(1)
+
+
+#[{"boot_index": "0", "uuid": "c19be03e-07fb-4d43-8531-c0bc1f8500e6", "volume_size": "120", "source_type": "volume", "destination_type": "volume", "delete_on_termination": false}]
+
+    bdm = [{'uuid' : volume.id, 'source_type' : 'volume', 
+           'destination_type' : 'volume',
+           'boot_index' : "0",
+           'delete_on_termination' : False}]
+
+    server = nova.servers.create(server_name,
+           "",
            flavor=fl,
-           image=image_id,
     # birmingham
     #       nics=[{'net-id' : '1f12e463-50d1-4bd9-9d41-fa704be32b66'}],
     # cardiff - admin
@@ -116,7 +140,7 @@ cluster_templates:
            nics=[{'net-id' : '93ffd3af-c7cf-48d8-ba4c-ce59068c5c0a'}],           
            userdata=userdata,
            key_name=key_name,
-        )
+           block_device_mapping_v2=bdm)
     print server
 
     #server.add_floating_ip(f.ip)
