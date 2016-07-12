@@ -79,6 +79,13 @@ def accept_invite(request, uuid):
         if userform.is_valid():
             user = userform.save()
 
+            # add user profile
+            profile = UserProfile()
+            profile.user = user
+            profile.current_region = Region.objects.get(name='warwick')
+            profile.email_validated = True
+            profile.save()
+
             # add team member
             member = TeamMember()
             member.team = i.to_team
