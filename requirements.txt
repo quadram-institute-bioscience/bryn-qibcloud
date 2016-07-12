@@ -7,3 +7,4 @@ django-phonenumber-field
 python-glanceclient
 python-neutronclient
 gunicorn
+django_extensions

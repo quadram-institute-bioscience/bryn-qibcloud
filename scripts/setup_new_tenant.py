@@ -1,5 +1,12 @@
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../brynweb'))
+import django
+
+def run():
+    from userdb.models import Team
+    print Team.objects.all()
+
 
 from brynweb.openstack.client import OpenstackClient
 import sys
@@ -10,6 +17,8 @@ import sys
 # set access control
 # set up networking (for bham, cardiff)
 # add key pair (optional)
+
+
 
 client = OpenstackClient(sys.argv[1])
 tenant_name = sys.argv[2]

@@ -7,7 +7,22 @@ import uuid
 class Tenant(Model):
     team = ForeignKey(Team)
     region = ForeignKey(Region)
-    tenant_name = CharField(max_length=50)
-    auth_username = CharField(max_length=50)
+    created_tenant_id = CharField(max_length=50)
     auth_password = CharField(max_length=50)
+
+    def get_tenant_name(self):
+        return "bryn:%d_%s" % (self.team.pk, self.team.name)
+
+    def get_tenant_description(self):
+        return "%s (%s)" % (self.team.name, self.team.creator.last_name)
+
+    def get_auth_username(self):
+        return self.get_tenant_name()
+
+    def __str__(self):
+        return "%s - %s" % (self.get_tenant_name(), self.region)
+
+class RegionSettings(Model):
+    region = ForeignKey(Region)
+    gvl_image_id = CharField(max_length=50)
 

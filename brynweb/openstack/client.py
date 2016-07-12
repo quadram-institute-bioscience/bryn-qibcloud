@@ -8,25 +8,32 @@ from neutronclient.v2_0 import client as neutronclient
 import auth_settings
 import sys
 
+def get_admin_credentials():
+    return {'username' : authsettings['AUTH_NAME'],
+            'password' : authsettings['AUTH_PASSWORD'],
+            'project_name' : authsettings['TENANT_NAME']}
+
 class OpenstackClient:
-    def __init__(self, region):
+    def __init__(self, region, username=None, password=None, project_name=None):
         self.region = region
         self.have_sess = False
         self.have_keystone = False
         self.have_nova = False 
         self.have_glance = False
         self.have_neutron = False
+
         self.authsettings = auth_settings.AUTHENTICATION[self.region]
+        self.authsettings['AUTH_NAME'] = username
+        self.authsettings['AUTH_PASSWORD'] = password
+        self.authsettings['TENANT_NAME'] = project_name
 
     def get_sess(self):
         if not self.have_sess:
-            authsettings = auth_settings.AUTHENTICATION[self.region]
-
             loader = loading.get_plugin_loader('password')
-            auth = loader.load_from_options(auth_url=authsettings['AUTH_URL'],
-                                           username=authsettings['AUTH_NAME'],
-                                           password=authsettings['AUTH_PASSWORD'],
-                                           project_name=authsettings['TENANT_NAME'])
+            auth = loader.load_from_options(auth_url=self.authsettings['AUTH_URL'],
+                                           username=self.authsettings['AUTH_NAME'],
+                                           password=self.authsettings['AUTH_PASSWORD'],
+                                           project_name=self.authsettings['TENANT_NAME'])
             self.sess = session.Session(auth=auth)
             self.have_sess = True
         return self.sess
@@ -41,9 +48,8 @@ class OpenstackClient:
     def get_keystone(self):
         if not self.have_keystone:
             sess = self.get_sess()
-            authsettings = auth_settings.AUTHENTICATION[self.region]
-            if 'ADMIN_URL' in authsettings:
-                self.keystone = keystoneclient.Client(token=sess.get_token(), endpoint=authsettings['ADMIN_URL'])
+            if 'ADMIN_URL' in self.authsettings:
+                self.keystone = keystoneclient.Client(token=sess.get_token(), endpoint=self.authsettings['ADMIN_URL'])
             else:
                 self.keystone = keystoneclient.Client(session=sess)
             self.have_keystone = True
@@ -66,7 +72,7 @@ class OpenstackClient:
         return self.neutron
 
     def get_servers(self):
-        nova = get_nova(self.region)
+        nova = self.get_nova(self.region)
         keystone = keystoneclient.Client(session=sess)
 
         search_opts = { 'all_tenants': True, }

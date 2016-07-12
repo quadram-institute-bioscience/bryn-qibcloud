@@ -12,6 +12,9 @@ class Region(Model):
     name = CharField(max_length=40)
     description = CharField(max_length=40)
 
+    def __str__(self):
+        return self.name
+
 class Institution(Model):
     name = CharField(max_length=100)
 
