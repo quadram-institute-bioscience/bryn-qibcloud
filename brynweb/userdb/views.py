@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from .forms import CustomUserCreationForm, TeamForm, InvitationForm
-from .models import Institution, Team, TeamMember, Invitation, UserProfile
+from .models import Institution, Team, TeamMember, Invitation, UserProfile, Region
 
 
 def register(request):
@@ -16,11 +16,14 @@ def register(request):
             user = userform.save()
 
             profile = UserProfile()
+            profile.current_region = Region.objects.get(name='warwick')
             profile.send_validation_link(user)
 
             # add team
             team = teamform.save(commit=False)
             team.creator = user
+            team.verified = False
+            team.default_region = Region.objects.get(name='warwick')
             team.save()
 
             # add team member

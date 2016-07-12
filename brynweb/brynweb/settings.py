@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'userdb',
     'home',
     'discourse',
+    'openstack',
 ]
 
 MIDDLEWARE_CLASSES = [

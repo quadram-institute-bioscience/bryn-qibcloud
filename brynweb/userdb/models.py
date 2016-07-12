@@ -8,6 +8,10 @@ import uuid
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 
+class Region(Model):
+    name = CharField(max_length=40)
+    description = CharField(max_length=40)
+
 class Institution(Model):
     name = CharField(max_length=100)
 
@@ -24,6 +28,10 @@ class Team(Model):
     research_interests = TextField(verbose_name="Research interests", help_text="Please supply a brief synopsis of your research programme")
     intended_climb_use = TextField(verbose_name="Intended use of CLIMB", help_text="Please let us know how you or your group intend to use CLIMB")
     held_mrc_grants = TextField(verbose_name="Held MRC grants", help_text="If you currently or recent have held grant funding from the Medical Research Council it would be very helpful if you can detail it here to assist with reporting use of CLIMB")
+
+    verified = BooleanField(default=False)
+
+    default_region = ForeignKey(Region)
 
     def __str__(self):
         return self.name
@@ -82,6 +90,7 @@ class UserProfile(Model):
     user = OneToOneField(User, on_delete=CASCADE)
     validation_link = UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email_validated = BooleanField(default=False)
+    current_region = ForeignKey(Region)
 
     def send_validation_link(self, user):
         self.user = user

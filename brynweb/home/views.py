@@ -6,6 +6,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 
+from userdb.models import Team
+
 # Create your views here.
 
 def home(request):
@@ -15,7 +17,10 @@ def home(request):
         return render(request, 'home/home.html', context)
     else:
         invite = InvitationForm(request.user)
-        context = {'invite' : invite}
+
+        teams = Team.objects.filter(teammember__user=request.user)
+
+        context = {'invite' : invite, 'teams' : teams}
         return render(request, 'home/dashboard.html', context)
 
 def loginpage(request):
@@ -23,12 +28,14 @@ def loginpage(request):
     password = request.POST['password']
     user = authenticate(username=username, password=password)
     if user is not None:
-        if user.is_active:
-            login(request, user)
-            messages.success(request, 'You have been successfully logged in.')
-            return HttpResponseRedirect('/')
+        if user.userprofile.email_validated:
+            if user.is_active:
+                login(request, user)
+                messages.success(request, 'You have been successfully logged in.')
+            else:
+                messages.error(request, 'Sorry your account is disabled.')
         else:
-            messages.error(request, 'Sorry your account is disabled.')
+            messages.error(request, 'Please validate your email address by following the link sent to your email first.')
     else:
         messages.error(request, 'Invalid username or password.')
     return HttpResponseRedirect('/')

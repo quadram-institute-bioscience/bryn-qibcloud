@@ -15,6 +15,15 @@
 		<div class="col-md-6">
 			{% bootstrap_messages %}
 
+                        {% for t in teams %}
+                        <h2>{{ t }}</h2>
+
+                        {% if not t.verified %}
+                        <p>Your team details are currently being validated by our administration team.
+                        Please check back later to launch servers!</p>
+                        {% endif %}
+
+                        {% if t.verified %}
                         <h2>Servers</h2>
 
                         <p>Button to launch a server</p>
@@ -30,6 +39,9 @@
                                 </button>
                             {% endbuttons %}
                         </form>
+                        {% endif %}
+
+                        {%endfor %}
 		</div>
 	</div>
 </div>
