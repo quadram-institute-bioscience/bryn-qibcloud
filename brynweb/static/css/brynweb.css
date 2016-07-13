@@ -4,7 +4,11 @@ body {
   font-family: 'Roboto';
 }
 
-h2, .h2, h3, .h3 {
+h2, .h2 {
+  color: #2d728b;
+}
+
+h3, .h3 {
   color: #d07232;
 }
 
@@ -136,4 +140,12 @@ h2, .h2, h3, .h3 {
   .flex-row.row:before {
     display: flex;
   }
+}
+
+
+/* --- TABLES --- */
+
+.table-responsive {
+  overflow-y: visible;
+  overflow-x: visible;
 }

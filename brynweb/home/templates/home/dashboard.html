@@ -2,96 +2,110 @@
 {% load bootstrap3 %}
 
 {% block full_jumbo %}
-	<div class="jumbotron">
-		<div class="container">
-                	<h1>Dashboard</h1>
-		</div>
-	</div>
+  <div class="jumbotron">
+    <div class="container">
+      <h1>Dashboard</h1>
+    </div>
+  </div>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-	<div class="row">
-		<div class="col-md-10">
-			{% bootstrap_messages %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10">
 
-                        {% for t in teams %}
-                        <h2>{{ t }}</h2>
+        {% bootstrap_messages %}
 
-                        {% if not t.verified %}
-                        <p>Your team details are currently being validated by our administration team.
-                        Please check back later to launch servers!</p>
-                        {% endif %}
+        {% for t in teams %}
+          <h2>{{ t }}</h2>
 
-                        {% if t.verified and t.tenants_available %}
+          {% if not t.verified %}
+            <p>Your team details are currently being validated by our administration team. Please check back later to launch servers!</p>
+          {% endif %}
 
-                        <h3>Running servers</h3>
+          {% if t.verified and t.tenants_available %}
+            <h3>Running servers</h3>
 
-                        {% if not t.instances %}
-                            <p>No instances currently running.</p>
-                        {% endif %}
+            {% if not t.instances %}
+              <p>No instances currently running.</p>
+            {% endif %}
 
-                        <div class="table-responsive">
-                            <table class="table">
-                            <tr><th>Name</th><th>Created</th><th>Flavor</th><th>Status</th><th>IP address</th><th></th><th></th><th></th></tr>
-                        {% for i in t.instances %}
-                            <tr><td>{{ i.name }}</td>
-                                <td>{{ i.created }}</td>
-                                <td>{{ i.flavor }}</td>
-                                <td>{{ i.status }}</td>
-                                <td><a href="http://{{ i.ip }}">{{ i.ip }}</a></td>
-                                {% if i.status == 'SHUTOFF' %}
-                                <td><a href="{% url "start" t.pk i.id %}">Start</a></td>
-                                <td></td>
-                                {% else %}
-                                <td><a href="{% url "stop" t.pk i.id %}">Stop</a></td>
-                                <td><a href="{% url "reboot" t.pk i.id %}">Reboot</a></td>
-                                {% endif %}
-                                <td><a href="{% url "terminate" t.pk i.id %}">Terminate</a></td>
-                            </tr>
-                        {% endfor %}
-                            </table>
-                        </div>
+            <div class="table-responsive">
+              <table class="table">
+                <tr>
+                  <th>Name</th>
+                  <th>Created</th>
+                  <th>Flavor</th>
+                  <th>Status</th>
+                  <th>IP address</th>
+                  <th>Tasks</th>
+                </tr>
 
-                        <h3>Launch a Genomics Virtual Laboratory server</h3>
+                {% for i in t.instances %}
+                  <tr>
+                    <td>{{ i.name }}</td>
+                    <td>{{ i.created }}</td>
+                    <td>{{ i.flavor }}</td>
+                    <td>{{ i.status }}</td>
+                    <td><a href="http://{{ i.ip }}">{{ i.ip }}</a></td>
 
-                        <form action="{% url "launch" t.pk %}" method="post" class="form">
-                            {% csrf_token %}
-                            {% bootstrap_form t.form %}
-                            {% buttons %}
-                                <button type="submit" class="btn btn-primary">
-                                    {% bootstrap_icon "star" %} Launch Server
-                                </button>
-                            {% endbuttons %}
-                        </form>
-                        {% endif %}
+                    <td>
+                      <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Tasks
+                        <span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                          {% if i.status == 'SHUTOFF' %}
+                            <li><a href="{% url "start" t.pk i.id %}">Start</a></li>
+                          {% else %}
+                            <li><a href="{% url "stop" t.pk i.id %}">Stop</a></li>
+                            <li><a href="{% url "reboot" t.pk i.id %}">Reboot</a></li>
+                          {% endif %}
+                          <li><a href="{% url "terminate" t.pk i.id %}">Terminate</a></li>
+                        </ul>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
 
-                        {% if t.verified and not t.tenants_available %}
-                        <p>Please check back tomorrow for the ability to launch your own virtual
-                        machines in the cloud. In the meantime you might like to browse
-                        <a href="http://discourse.climb.ac.uk">the CLIMB discussion forum</a>.</p>
+              </table>
+            </div>
 
-                        {% endif %}
+            <h3>Launch a Genomics Virtual Laboratory server</h3>
 
-                        {% if t.verified and t.is_admin %}
-                        <p>As group leader, you can invite new users to join your group
-                        using this invitation form:</p>
+            <form action="{% url "launch" t.pk %}" method="post" class="form">
+              {% csrf_token %}
+              {% bootstrap_form t.form %}
+              {% buttons %}
+                <button type="submit" class="btn btn-primary">
+                  {% bootstrap_icon "star" %} Launch Server
+                </button>
+              {% endbuttons %}
+            </form>
+          {% endif %}
 
-                        <h2>Invite users</h2>
+          {% if t.verified and not t.tenants_available %}
+            <p>Please check back tomorrow for the ability to launch your own virtual machines in the cloud. In the meantime you might like to browse <a href="http://discourse.climb.ac.uk">the CLIMB discussion forum</a>.</p>
+          {% endif %}
 
-                        <form action="{% url "invite" %}" method="post" class="form">
-                            {% csrf_token %}
-                            {% bootstrap_form invite %}
-                            {% buttons %}
-                                <button type="submit" class="btn btn-primary">
-                                    {% bootstrap_icon "star" %} Invite User
-                                </button>
-                            {% endbuttons %}
-                        </form>
-                        {% endif %}
+          {% if t.verified and t.is_admin %}
+            <p>As group leader, you can invite new users to join your group using this invitation form:</p>
 
-                        {%endfor %}
-		</div>
-	</div>
-</div>
+            <h2>Invite users</h2>
+
+            <form action="{% url "invite" %}" method="post" class="form">
+              {% csrf_token %}
+              {% bootstrap_form invite %}
+              {% buttons %}
+                <button type="submit" class="btn btn-primary">
+                  {% bootstrap_icon "star" %} Invite User
+                </button>
+              {% endbuttons %}
+            </form>
+          {% endif %}
+
+        {# -- end team -- #}
+        {%endfor %}
+      </div>
+    </div>
+  </div>
 {% endblock %}
