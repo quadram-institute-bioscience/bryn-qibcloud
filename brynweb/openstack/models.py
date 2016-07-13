@@ -17,13 +17,28 @@ class Tenant(Model):
     def get_tenant_description(self):
         return "%s (%s)" % (self.team.name, self.team.creator.last_name)
 
-    def get_server(self, uuid):
+    def get_client(self):
         client = OpenstackClient(self.region.name,
                                  username=self.get_auth_username(),
                                  password=self.auth_password,
                                  project_name=self.get_tenant_name())
+        return client
+
+    def get_server(self, uuid):
+        client = self.get_client()
         nova = client.get_nova()
         return nova.servers.get(uuid)
+
+    def get_images(self):
+        client = self.get_client()
+        glance = client.get_glance()
+
+        return [(i.id, i.name) for i in glance.images.list()]
+
+    def get_keys(self):
+        client = self.get_client()
+        nova = client.get_nova()
+        return [(k.name, k.name) for k in nova.keypairs.list()]
 
     def get_auth_username(self):
         return self.get_tenant_name()

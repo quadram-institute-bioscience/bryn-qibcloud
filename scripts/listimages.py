@@ -1,11 +1,11 @@
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from brynweb.openstack.client import get_sess
+from brynweb.openstack.client import OpenstackClient, get_admin_credentials
 from glanceclient import Client
 
-sess = get_sess(sys.argv[1])
-glance = Client('2', session=sess)
-for i in glance.images.list():
-	print i
+client = OpenstackClient('warwick', **get_admin_credentials('warwick'))
+glance = client.get_glance()
 
+for i in glance.images.list():
+    print i.__dict__
