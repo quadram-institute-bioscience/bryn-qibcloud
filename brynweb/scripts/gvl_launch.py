@@ -135,7 +135,7 @@ cluster_templates:
     bdm = [{'uuid' : volume.id, 'source_type' : 'volume', 
            'destination_type' : 'volume',
            'boot_index' : "0",
-           'delete_on_termination' : False}]
+           'delete_on_termination' : True}]
 
     server = nova.servers.create(server_name,
            "",
