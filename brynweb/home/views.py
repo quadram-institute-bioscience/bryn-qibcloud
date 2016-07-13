@@ -121,8 +121,6 @@ def launchcustom(request, teamid):
     else:
         f = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
     return render(request, 'home/launch-image.html', context={'form' : f})
-    launch_image(tenant, 'test-ubuntu', '2ae0fe84-74d9-47fe-a744-408ec28026fd', 'launchkey', 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClUIKUlWckdyjIur2OhEFz4Xa2eKrpZe7ZgcVBnV3eUJi4WCPzB39aD4GvakwsUuKMGno3ipSCBI2Mcw2VfGD9oelCmPA/M6/cDvjijaQSgF5WBNoAbbaARtWyDSu+XMpbftNexmpc3CblamTm3DEgrOnhTcNJ+Imk+wBXpFUZOvfu/Ht/MBldbcgWp2RK8rgX+tCf5GUdgvA3Fz8YyvIOcIHIqSa9c9hfhes2hyLsrxe39norXUgsrgbMWlqqMYLc95TSYRFI+VYstoQ5b/6QHa/UloKkAR8LhVv8ntfRXVgvQtmUh3GzrYu326JW+kYSQ8hMX++v2w84vpL+50Rz nick@Nicks-MacBook-Pro.local', 'group')
-
 
 def stop(request, teamid, uuid):
     tenant = validate_and_get_tenant(request, teamid)
