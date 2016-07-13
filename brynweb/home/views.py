@@ -140,7 +140,8 @@ def launchcustom(request, teamid):
                 return HttpResponseRedirect('/')
             except Exception, e:
                 messages.error(request, 'Error launching: %s' % (e,))
-            messages.success(request, 'Successfully launched server!')
+            else:
+                messages.success(request, 'Successfully launched server!')
     else:
         f = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
     return render(request, 'home/launch-image.html', context={'form' : f})
