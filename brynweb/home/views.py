@@ -84,7 +84,6 @@ def launch(request, teamid):
         messages.error(request, 'Problem with form items.')
         return render(request, 'home/launch-fail.html', context={'form' : f})
 
-    tenant = get_tenant_for_team(team, Region.objects.get(name='warwick'))
     try:
         launch_gvl(tenant, f.cleaned_data['server_name'], f.cleaned_data['password'], f.cleaned_data['server_type'])
     except Exception, e:
