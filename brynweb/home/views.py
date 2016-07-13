@@ -19,6 +19,9 @@ def home(request):
         invite = InvitationForm(request.user)
 
         teams = Team.objects.filter(teammember__user=request.user)
+        for t in teams:
+            if request.user == t.creator:
+                t.is_admin = True
 
         context = {'invite' : invite, 'teams' : teams}
         return render(request, 'home/dashboard.html', context)

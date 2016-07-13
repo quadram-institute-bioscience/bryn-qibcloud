@@ -24,9 +24,13 @@
                         {% endif %}
 
                         {% if t.verified %}
-                        <h2>Servers</h2>
+                        <p>Please check back tomorrow for the ability to launch your own virtual
+                        machines in the cloud. In the meantime you might like to browse
+                        <a href="http://discourse.climb.ac.uk">the CLIMB discussion forum</a>.</p>
 
-                        <p>Button to launch a server</p>
+                        {% if t.is_admin %}
+                        <p>As group leader, you can invite new users to join your group
+                        using this invitation form:</p>
 
                         <h2>Invite users</h2>
 
@@ -39,6 +43,7 @@
                                 </button>
                             {% endbuttons %}
                         </form>
+                        {% endif %}
                         {% endif %}
 
                         {%endfor %}

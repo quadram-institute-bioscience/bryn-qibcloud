@@ -36,6 +36,37 @@ class Team(Model):
 
     default_region = ForeignKey(Region)
 
+    def verify_and_send_notification_email(self):
+        send_mail('CLIMB Team Application approved!',
+                  """Hi %s
+
+Thank you for applying for a CLIMB group account for:
+
+%s
+
+We are pleased to inform you that your application has been successful!
+Your account is now active and you can sign into your group at:
+
+http://bryn.climb.ac.uk
+
+Upon logging-in you can now begin to invite others to join your group
+and register as new CLIMB users.
+
+Please note that use of this service implies acceptance of the
+CLIMB acceptable use policy that can be viewed at:
+
+https://discourse.climb.ac.uk/t/acceptable-use-and-security-policy/19
+
+Best regards
+
+
+The CLIMB Project""" % (self.creator.first_name, self.name),
+                        'noreply@discourse.climb.ac.uk',
+                        [self.creator.email], fail_silently=False)
+
+        self.verified = True
+        self.save()
+
     def __str__(self):
         return self.name
 
