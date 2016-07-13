@@ -155,12 +155,6 @@ PIPELINE = {
                 'js/brynweb.js',
             ),
             'output_filename': 'js/brynweb.min.js'
-        },
-        'home': {
-            'source_filenames': (
-                'home/js/dashboard.js',
-            ),
-            'output_filename': 'js/home.min.js'
         }
     }
 }

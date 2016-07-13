@@ -1,5 +1,9 @@
 {% extends "home/base.html" %}
-{% load bootstrap3 %}
+{% load bootstrap3 static %}
+
+{% block extra_js %}
+  <script src="{% static 'home/js/dashboard.js' %}"></script>
+{% endblock %}
 
 {% block full_jumbo %}
   <div class="jumbotron">
