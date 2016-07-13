@@ -32,6 +32,10 @@ def home(request):
             t.form = LaunchServerForm()
 
             tenant = get_tenant_for_team(t, Region.objects.get(name='warwick'))
+            if not tenant:
+                messages.error(request, 'No tenant registered for this team!')
+                continue
+
             t.instances = list_instances(tenant)
 
         context = {'invite' : invite, 'teams' : teams}
