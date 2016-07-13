@@ -9,7 +9,6 @@ import time
 def add_keypair(nova, keyname, keyvalue):
     for k in nova.keypairs.list():
         if k.name == keyname:
-            print "found existing key\n"
             return k.name
 
     keypair = nova.keypairs.create(name=keyname, public_key=keyvalue)

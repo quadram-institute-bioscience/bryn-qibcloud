@@ -2,16 +2,11 @@
 from openstack.client import OpenstackClient
 from openstack.models import Tenant
 from userdb.models import Team, Region
+from scripts.image_launch import add_keypair
+
 import sys
 import yaml
 import time
-
-def add_keypair(nova):
-    try:
-        keypair = nova.keypairs.create(name='default_key', public_key="""ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClUIKUlWckdyjIur2OhEFz4Xa2eKrpZe7ZgcVBnV3eUJi4WCPzB39aD4GvakwsUuKMGno3ipSCBI2Mcw2VfGD9oelCmPA/M6/cDvjijaQSgF5WBNoAbbaARtWyDSu+XMpbftNexmpc3CblamTm3DEgrOnhTcNJ+Imk+wBXpFUZOvfu/Ht/MBldbcgWp2RK8rgX+tCf5GUdgvA3Fz8YyvIOcIHIqSa9c9hfhes2hyLsrxe39norXUgsrgbMWlqqMYLc95TSYRFI+VYstoQ5b/6QHa/UloKkAR8LhVv8ntfRXVgvQtmUh3GzrYu326JW+kYSQ8hMX++v2w84vpL+50Rz nick@Nicks-MacBook-Pro.local""")
-    except Exception:
-        print "keypair create failed"
-    return 'default_key'
 
 def launch_gvl(tenant, server_name, password, server_type='group'):
     client = OpenstackClient(tenant.region.name,
@@ -20,7 +15,8 @@ def launch_gvl(tenant, server_name, password, server_type='group'):
                              project_name=tenant.get_tenant_name())
 
     nova = client.get_nova()
-    key_name = add_keypair(nova)
+
+    key_name = add_keypair(nova, 'nick-key', """ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClUIKUlWckdyjIur2OhEFz4Xa2eKrpZe7ZgcVBnV3eUJi4WCPzB39aD4GvakwsUuKMGno3ipSCBI2Mcw2VfGD9oelCmPA/M6/cDvjijaQSgF5WBNoAbbaARtWyDSu+XMpbftNexmpc3CblamTm3DEgrOnhTcNJ+Imk+wBXpFUZOvfu/Ht/MBldbcgWp2RK8rgX+tCf5GUdgvA3Fz8YyvIOcIHIqSa9c9hfhes2hyLsrxe39norXUgsrgbMWlqqMYLc95TSYRFI+VYstoQ5b/6QHa/UloKkAR8LhVv8ntfRXVgvQtmUh3GzrYu326JW+kYSQ8hMX++v2w84vpL+50Rz nick@Nicks-MacBook-Pro.local""")
 
     #server_name = "%s-%s" % (tenant.team.name, server_type)
 
