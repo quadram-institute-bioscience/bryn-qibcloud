@@ -1,13 +1,16 @@
 $(function() {
   $('#id_server_key_name').closest('.form-group').hide();
+  $('#id_server_key').closest('.form-group').hide();
 
   $('#id_server_key_name_choice').change(function() {
-    var target = $('#id_server_key_name').closest('.form-group').show();
+    var key_name = $('#id_server_key_name').closest('.form-group');
+    var key = $('#id_server_key').closest('.form-group');
     if ($(this).val() == 'bryn:new') {
-      target.show();
+      key_name.show();
+      key.show();
     } else {
-      $('input', target).val('');
-      target.hide();
+      key_name.hide();
+      key.hide();
     }
   });
 });
