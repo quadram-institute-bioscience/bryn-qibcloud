@@ -21,7 +21,9 @@ def list_instances(tenant):
         except:
             ip = 'n/a'
 
-        servers.append({'name' : s.name, 'created' : s.created,
+        servers.append({'id' : s.id,
+                        'name' : s.name,
+                        'created' : s.created,
                         'flavor' : nova.flavors.get(s.flavor['id']).name,
                         'status' : s.status,
                         'ip' : ip})

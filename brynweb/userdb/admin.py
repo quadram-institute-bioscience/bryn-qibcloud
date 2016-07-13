@@ -54,7 +54,16 @@ class UserProfileInline(admin.StackedInline):
     can_delete = False
 
 class CustomUserAdmin(UserAdmin):
+    list_filter = ('userprofile__email_validated',)
+
+    actions = ['resend_email_activation_link',]
+
     inlines = (UserProfileInline,)
+
+    def resend_email_activation_link(self, request, queryset):
+        for u in queryset:
+            u.userprofile.send_validation_link(u)
+        self.message_user(request, 'Validation links resent.') 
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
