@@ -13,7 +13,7 @@ class CustomUserCreationForm(UserCreationForm):
 class TeamForm(ModelForm):
     class Meta:
         model = Team
-        exclude = ('creator', 'created_at', 'verified', 'default_region')
+        exclude = ('creator', 'created_at', 'verified', 'default_region', 'tenants_available')
         widgets = {'phone_number': PhoneNumberInternationalFallbackWidget}
 
 class InvitationForm(ModelForm):
