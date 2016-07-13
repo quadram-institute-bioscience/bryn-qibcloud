@@ -85,6 +85,16 @@
             <h3>Launch a custom server</h3>
 
             <p><a href="{% url "launchcustom" t.pk %}">Launch a server from a different image</a></p>
+
+            <h3>Advanced interface</h3>
+
+            <p>
+            For advanced options, please login to <a href="http://stack.warwick.climb.ac.uk">Horizon</a> with:
+            <ul>
+                <li>username - <font face="Courier">{{ t.tenant_access.get_auth_username }}</font>
+                <li>password - <font face="Courier">{{ t.tenant_access.auth_password }}</font>
+            </ul>
+            </p>
             
           {% endif %}
 

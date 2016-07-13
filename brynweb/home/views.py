@@ -37,6 +37,8 @@ def home(request):
                 messages.error(request, 'No tenant registered for this team!')
                 continue
 
+            t.tenant_access = tenant
+
             t.instances = list_instances(tenant)
 
         context = {'invite' : invite, 'teams' : teams}
