@@ -14,8 +14,19 @@ def list_instances(tenant):
 
     nova = client.get_nova()
 
+    servers = []
     for s in nova.servers.list(detailed=True):
-        print "%s %s %s %s %s" % (s.name, s.created, nova.flavors.get(s.flavor['id']).name, s.status, s.addresses['public'][0]['addr'])
+        try:
+            ip = s.addresses['public'][0]['addr']
+        except:
+            ip = 'n/a'
+
+        servers.append({'name' : s.name, 'created' : s.created,
+                        'flavor' : nova.flavors.get(s.flavor['id']).name,
+                        'status' : s.status,
+                        'ip' : ip})
+
+    return servers
 
 def run():
     team = Team.objects.get(pk=1)

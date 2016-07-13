@@ -5,5 +5,6 @@ from . import views
 urlpatterns = [
     url(r'^login$', views.loginpage, name='login'),
     url(r'^logout$', views.logoutview, name='logout'),
+    url(r'^launch/(?P<teamid>\d+)$', views.launch, name='launch'),
     url(r'^$', views.home, name='home'),
 ]

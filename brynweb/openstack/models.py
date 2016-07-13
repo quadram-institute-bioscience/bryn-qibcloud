@@ -29,3 +29,10 @@ class RegionSettings(Model):
     def __str__(self):
         return str(self.region)
 
+def get_tenant_for_team(team, region):
+    tenant = Tenant.objects.filter(team=team, region=Region.objects.get(name='warwick'))
+    if not tenant:
+        raise Exception('No tenant for team')
+    if len(tenant) > 1:
+        raise Exception('Too many tenants for team!')
+    return tenant[0]

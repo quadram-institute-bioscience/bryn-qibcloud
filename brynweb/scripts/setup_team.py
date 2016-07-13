@@ -59,5 +59,5 @@ def setup_tenant(team, region):
 
 
 def run():
-    t = Team.objects.get(name='Loman Labz')
+    t = Team.objects.get(name='Systems admin')
     setup_tenant(t, Region.objects.get(name='warwick'))

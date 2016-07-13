@@ -5,8 +5,14 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 
-from userdb.models import Team
+from userdb.models import Team, Region, TeamMember
+from openstack.models import Tenant, get_tenant_for_team
+from forms import LaunchServerForm
+from scripts.list_instances import list_instances
+from scripts.gvl_launch import launch_gvl
 
 # Create your views here.
 
@@ -22,6 +28,11 @@ def home(request):
         for t in teams:
             if request.user == t.creator:
                 t.is_admin = True
+
+            t.form = LaunchServerForm()
+
+            tenant = get_tenant_for_team(t, Region.objects.get(name='warwick'))
+            t.instances = list_instances(tenant)
 
         context = {'invite' : invite, 'teams' : teams}
         return render(request, 'home/dashboard.html', context)
@@ -46,5 +57,26 @@ def loginpage(request):
 def logoutview(request):
     logout(request)
     return HttpResponseRedirect(reverse('home'))
-    
-    
+
+@login_required
+def launch(request, teamid):
+    team = get_object_or_404(Team, pk=teamid)
+
+    # check belongs to team
+    member = TeamMember.objects.filter(team=team, user=request.user) 
+    if not member:
+        messages.error(request, 'Access denied to this team.')
+        return HttpResponseRedirect('/')
+
+    f = LaunchServerForm(request.POST)
+    if not f.is_valid():
+        messages.error(request, 'Problem with form items.')
+        return HttpResponseRedirect('/')
+
+    tenant = get_tenant_for_team(team, Region.objects.get(name='warwick'))
+    launch_gvl(tenant, f.cleaned_data['server_name'], f.cleaned_data['password'], f.cleaned_data['server_type'])
+
+    messages.success(request, 'Successfully launched server!')
+
+    return HttpResponseRedirect('/')
+ 

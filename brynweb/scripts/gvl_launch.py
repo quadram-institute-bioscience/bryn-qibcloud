@@ -13,7 +13,7 @@ def add_keypair(nova):
         print "keypair create failed"
     return 'default_key'
 
-def launch_gvl(tenant, password, server_type='group'):
+def launch_gvl(tenant, server_name, password, server_type='group'):
     client = OpenstackClient(tenant.region.name,
                              username=tenant.get_auth_username(),
                              password=tenant.auth_password,
@@ -22,13 +22,13 @@ def launch_gvl(tenant, password, server_type='group'):
     nova = client.get_nova()
     key_name = add_keypair(nova)
 
-    server_name = "%s-%s" % (tenant.team.name, server_type)
+    #server_name = "%s-%s" % (tenant.team.name, server_type)
 
     user_specific_data = {'cloud_name'   : 'CLIMB',
-                          'cluster_name' : server_name,
+                          'cluster_name' : str(server_name),
                           'key_name'     : key_name,
-                          'password'     : password,
-                          'freenxpass'   : password}
+                          'password'     : str(password),
+                          'freenxpass'   : str(password)}
 
     tenant_id = tenant.created_tenant_id
     access, secret = client.get_ec2_keys(tenant_id)
@@ -76,8 +76,7 @@ cluster_templates:
       archive_url: https://s3.eu-central-1.amazonaws.com/cloudman-gvl-400-frankfurt/gvl-indices-blank-4.0.0.tar.gz
       archive_md5: 09eadb352ef3be038221f4226edaadc8
   - name: Data
-    filesystem_templates:
-"""
+    filesystem_templates:"""
 
     userdata = yaml.dump(user_specific_data, default_flow_style=False) + \
                  yaml.dump(cloud_specific_data, default_flow_style=False) + \
@@ -94,7 +93,10 @@ cluster_templates:
     #f = nova.floating_ips.create('public')
     #print f
 
-    fl = nova.flavors.find(name='climb.group')
+    if server_type == 'group':
+        fl = nova.flavors.find(name='climb.group')
+    else:
+        fl = nova.flavors.find(name='climb.user')
 
     #for i in client.get_glance().images.list():
     #    if i.name == 'GVL 4.1.0':
@@ -151,5 +153,5 @@ def run():
     print team
     tenant = Tenant.objects.filter(team=team, region=Region.objects.get(name='warwick'))[0]
     print tenant
-    launch_gvl(tenant, 'testtest99')
+    launch_gvl(tenant, 'test launcher', 'testtest99', 'group')
  

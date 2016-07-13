@@ -5,6 +5,7 @@ from keystoneclient.v2_0 import client as keystoneclient
 from glanceclient import Client
 from neutronclient.v2_0 import client as neutronclient
 from cinderclient import client as cinderclient
+import copy
 
 import auth_settings
 import sys
@@ -25,7 +26,8 @@ class OpenstackClient:
         self.have_neutron = False
         self.have_cinder = False
 
-        self.authsettings = auth_settings.AUTHENTICATION[self.region]
+        # awful, sort it out
+        self.authsettings = copy.deepcopy(auth_settings.AUTHENTICATION[self.region])
         self.authsettings['AUTH_NAME'] = username
         self.authsettings['AUTH_PASSWORD'] = password
         self.authsettings['TENANT_NAME'] = project_name
