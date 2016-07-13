@@ -26,9 +26,12 @@
           {% if t.verified and t.tenants_available %}
             <h3>Running servers</h3>
 
+            <a href="javascript:window.location.reload();">Refresh page</a>
+
             {% if not t.instances %}
               <p>No instances currently running.</p>
             {% endif %}
+
 
             <div class="table-responsive">
               <table class="table">

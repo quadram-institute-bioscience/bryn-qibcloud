@@ -114,7 +114,7 @@ cluster_templates:
     cinder = client.get_cinder()
 
     volume = cinder.volumes.create(imageRef=tenant.region.regionsettings.gvl_image_id,
-                                       name="%s %s boot volume" % (tenant.get_tenant_name, server_name,),
+                                       name="%s %s boot volume" % (tenant.get_tenant_name(), server_name,),
                                        size=120)
     cinder.volumes.set_bootable(volume, True)
 

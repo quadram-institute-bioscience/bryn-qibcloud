@@ -32,7 +32,7 @@ def launch_image(tenant, server_name, image_id, auth_key_name, auth_key_value, s
     cinder = client.get_cinder()
 
     volume = cinder.volumes.create(imageRef=image_id,
-                                       name="%s %s boot volume" % (tenant.get_tenant_name, server_name,),
+                                       name="%s %s boot volume" % (tenant.get_tenant_name(), server_name,),
                                        size=120)
     cinder.volumes.set_bootable(volume, True)
 
