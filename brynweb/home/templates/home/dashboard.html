@@ -12,7 +12,7 @@
 {% block content %}
 <div class="container">
 	<div class="row">
-		<div class="col-md-6">
+		<div class="col-md-10">
 			{% bootstrap_messages %}
 
                         {% for t in teams %}
@@ -33,13 +33,21 @@
 
                         <div class="table-responsive">
                             <table class="table">
-                            <tr><th>Name</th><th>Created</th><th>Flavor</th><th>Status</th><th>IP address</th></tr>
+                            <tr><th>Name</th><th>Created</th><th>Flavor</th><th>Status</th><th>IP address</th><th></th><th></th><th></th></tr>
                         {% for i in t.instances %}
                             <tr><td>{{ i.name }}</td>
                                 <td>{{ i.created }}</td>
                                 <td>{{ i.flavor }}</td>
                                 <td>{{ i.status }}</td>
                                 <td><a href="http://{{ i.ip }}">{{ i.ip }}</a></td>
+                                {% if i.status == 'SHUTOFF' %}
+                                <td><a href="{% url "start" t.pk i.id %}">Start</a></td>
+                                <td></td>
+                                {% else %}
+                                <td><a href="{% url "stop" t.pk i.id %}">Stop</a></td>
+                                <td><a href="{% url "reboot" t.pk i.id %}">Reboot</a></td>
+                                {% endif %}
+                                <td><a href="{% url "terminate" t.pk i.id %}">Terminate</a></td>
                             </tr>
                         {% endfor %}
                             </table>

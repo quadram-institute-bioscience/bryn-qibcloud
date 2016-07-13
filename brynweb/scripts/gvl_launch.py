@@ -25,16 +25,16 @@ def launch_gvl(tenant, server_name, password, server_type='group'):
     #server_name = "%s-%s" % (tenant.team.name, server_type)
 
     user_specific_data = {'cloud_name'   : 'CLIMB',
-                          'cluster_name' : str(server_name),
+                          'cluster_name' : server_name,
                           'key_name'     : key_name,
-                          'password'     : str(password),
-                          'freenxpass'   : str(password)}
+                          'password'     : password,
+                          'freenxpass'   : password}
 
     tenant_id = tenant.created_tenant_id
     access, secret = client.get_ec2_keys(tenant_id)
 
-    user_specific_data['access_key'] = str(access)
-    user_specific_data['secret_key'] = str(secret)
+    user_specific_data['access_key'] = access
+    user_specific_data['secret_key'] = secret
 
     cloud_specific_data = {'ec2_conn_path'   : '/services/Cloud'}
 
@@ -76,11 +76,18 @@ cluster_templates:
       archive_url: https://s3.eu-central-1.amazonaws.com/cloudman-gvl-400-frankfurt/gvl-indices-blank-4.0.0.tar.gz
       archive_md5: 09eadb352ef3be038221f4226edaadc8
   - name: Data
-    filesystem_templates:"""
+    filesystem_templates:
+"""
 
-    userdata = yaml.dump(user_specific_data, default_flow_style=False) + \
-                 yaml.dump(cloud_specific_data, default_flow_style=False) + \
-                 generic_data
+#     archive_url: http://s3.climb.ac.uk/gvl/microgvl-apps-0.11-1-beta.tgz
+#     archive_md5: 0c5421da6b4c432625159a9df6e12784
+#     archive_url: http://s3.climb.ac.uk/gvl/microgvl-apps-0.11-1-beta-rebuilt.tgz
+#     archive_md5: 5c039ffacfe96e875c82c4bc8eb10df1
+
+
+    userdata = yaml.dump(user_specific_data, default_flow_style=False, allow_unicode=False) + \
+                 yaml.dump(cloud_specific_data, default_flow_style=False, allow_unicode=False) + \
+                 yaml.dump(yaml.load(generic_data), default_flow_style=False, allow_unicode=False)
 
     print userdata
 
@@ -111,8 +118,8 @@ cluster_templates:
     cinder = client.get_cinder()
 
     volume = cinder.volumes.create(imageRef=tenant.region.regionsettings.gvl_image_id,
-                                   name="bryn:%s boot volume" % (server_name,),
-                                   size=120)
+                                       name="bryn:%s boot volume" % (server_name,),
+                                       size=120)
     cinder.volumes.set_bootable(volume, True)
 
     print volume.id
@@ -146,12 +153,12 @@ cluster_templates:
            block_device_mapping_v2=bdm)
     print server
 
-    #server.add_floating_ip(f.ip)
+    return True
 
 def run():
     team = Team.objects.get(pk=1)
     print team
     tenant = Tenant.objects.filter(team=team, region=Region.objects.get(name='warwick'))[0]
     print tenant
-    launch_gvl(tenant, 'test launcher', 'testtest99', 'group')
+    launch_gvl(tenant, 'test', 'testtest99', 'group')
  

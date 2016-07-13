@@ -62,25 +62,71 @@ def logoutview(request):
     logout(request)
     return HttpResponseRedirect(reverse('home'))
 
-@login_required
-def launch(request, teamid):
+
+def validate_and_get_tenant(request, teamid):
     team = get_object_or_404(Team, pk=teamid)
 
     # check belongs to team
-    member = TeamMember.objects.filter(team=team, user=request.user) 
+    member = TeamMember.objects.filter(team=team, user=request.user)
     if not member:
         messages.error(request, 'Access denied to this team.')
         return HttpResponseRedirect('/')
 
+    tenant = get_tenant_for_team(team, Region.objects.get(name='warwick'))
+    return tenant
+
+@login_required
+def launch(request, teamid):
+    tenant = validate_and_get_tenant(request, teamid)
+
     f = LaunchServerForm(request.POST)
     if not f.is_valid():
         messages.error(request, 'Problem with form items.')
-        return HttpResponseRedirect('/')
+        return render(request, 'home/launch-fail.html', context={'form' : f})
 
     tenant = get_tenant_for_team(team, Region.objects.get(name='warwick'))
-    launch_gvl(tenant, f.cleaned_data['server_name'], f.cleaned_data['password'], f.cleaned_data['server_type'])
+    try:
+        launch_gvl(tenant, f.cleaned_data['server_name'], f.cleaned_data['password'], f.cleaned_data['server_type'])
+    except Exception, e:
+        messages.error(request, 'Error launching: %s' % (e,))
 
     messages.success(request, 'Successfully launched server!')
 
     return HttpResponseRedirect('/')
- 
+
+def stop(request, teamid, uuid):
+    tenant = validate_and_get_tenant(request, teamid)
+    try:
+        tenant.stop_server(uuid)
+        messages.success(request, 'Server stopped.')
+    except Exception, e:
+        messages.error(request, e)
+    return HttpResponseRedirect('/')
+
+def start(request, teamid, uuid):
+    tenant = validate_and_get_tenant(request, teamid)
+    try:
+        tenant.start_server(uuid)
+        messages.success(request, 'Server started.')
+    except Exception, e:
+        messages.error(request, e)
+    return HttpResponseRedirect('/')
+
+def reboot(request, teamid, uuid):
+    tenant = validate_and_get_tenant(request, teamid)
+    try:
+        tenant.reboot_server(uuid)
+        messages.success(request, 'Server rebooted.')
+    except Exception, e:
+        messages.error(request, e)
+    return HttpResponseRedirect('/')
+
+def terminate(request, teamid, uuid): 
+    tenant = validate_and_get_tenant(request, teamid)
+    try:
+        tenant.terminate_server(uuid)
+        messages.success(request, 'Server terminated.')
+    except Exception, e:
+        messages.error(request, e)
+    return HttpResponseRedirect('/')
+
