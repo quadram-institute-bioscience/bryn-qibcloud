@@ -36,6 +36,8 @@ class Team(Model):
 
     default_region = ForeignKey(Region)
 
+    tenants_available = BooleanField(default=False)
+
     def verify_and_send_notification_email(self):
         send_mail('CLIMB Team Application approved!',
                   """Hi %s

@@ -13,7 +13,7 @@ def add_keypair(nova):
         print "keypair create failed"
     return 'default_key'
 
-def launch_gvl(tenant, password):
+def launch_gvl(tenant, password, server_type='group'):
     client = OpenstackClient(tenant.region.name,
                              username=tenant.get_auth_username(),
                              password=tenant.auth_password,
@@ -22,7 +22,7 @@ def launch_gvl(tenant, password):
     nova = client.get_nova()
     key_name = add_keypair(nova)
 
-    server_name = "bryn:%s group server" % (tenant.team.name)
+    server_name = "%s-%s" % (tenant.team.name, server_type)
 
     user_specific_data = {'cloud_name'   : 'CLIMB',
                           'cluster_name' : server_name,
@@ -33,8 +33,8 @@ def launch_gvl(tenant, password):
     tenant_id = tenant.created_tenant_id
     access, secret = client.get_ec2_keys(tenant_id)
 
-    user_specific_data['access_key'] = access
-    user_specific_data['secret_key'] = secret
+    user_specific_data['access_key'] = str(access)
+    user_specific_data['secret_key'] = str(secret)
 
     cloud_specific_data = {'ec2_conn_path'   : '/services/Cloud'}
 
@@ -68,8 +68,8 @@ cluster_templates:
     - name: gvl
       type: transient
       data_source: archive
-      archive_url: http://s3.climb.ac.uk/gvl/microgvl-apps-0.11-1-beta.tgz
-      archive_md5: 0c5421da6b4c432625159a9df6e12784
+      archive_url: http://s3.climb.ac.uk/gvl/microgvl-apps-0.11-1-beta-rebuilt.tgz
+      archive_md5: 5c039ffacfe96e875c82c4bc8eb10df1
     - name: galaxyIndices
       type: transient
       roles: galaxyIndices
@@ -114,9 +114,10 @@ cluster_templates:
     cinder.volumes.set_bootable(volume, True)
 
     print volume.id
-    for n in xrange(10):
+    for n in xrange(20):
         v = cinder.volumes.get(volume.id)
-        print v.status
+        if v.status == 'available':
+            break
         time.sleep(1)
 
 
