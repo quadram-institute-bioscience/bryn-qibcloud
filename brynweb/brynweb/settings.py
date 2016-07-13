@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'home',
     'discourse',
     'openstack',
+    'pipeline',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -116,12 +117,41 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+]
+
 STATIC_ROOT = os.path.join(BASE_DIR, '../static')
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+# Pipeline
+
+PIPELINE = {
+    'STYLESHEETS': {
+        'brynweb': {
+            'source_filenames': (
+                'css/brynweb.css',
+            ),
+            'output_filename': 'css/brynweb.min.css',
+        },
+    },
+    'JAVASCRIPT': {
+        'brynweb': {
+            'source_filenames': (
+                'js/brynweb.js',
+            ),
+            'output_filename': 'js/brynweb.min.js'
+        }
+    }
+}
 
 
 # django-phonenumber-field settings
@@ -175,12 +205,3 @@ BOOTSTRAP3 = {
         'inline': 'bootstrap3.renderers.InlineFieldRenderer',
     },
 }
-
-## DISCOURSE
-
-DISCOURSE_BASE_URL = 'https://discourse.climb.ac.uk'
-DISCOURSE_SSO_SECRET = '54quWQYVdnMt8XmRS5qBKpJk'
-
-LOGIN_URL = '/'
-
-SECRET_KEY = 'dfsd7y8udiskhfsdf78syf7fydsifsidufsi'

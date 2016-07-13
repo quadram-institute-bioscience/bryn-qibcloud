@@ -9,3 +9,4 @@ python-neutronclient
 gunicorn
 django_extensions
 python-cinderclient
+django-pipeline==1.6.8

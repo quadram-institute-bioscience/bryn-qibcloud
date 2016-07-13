@@ -1,4 +1,4 @@
-{% load static bootstrap3 %}
+{% load static pipeline bootstrap3 %}
 
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -15,7 +15,7 @@
     {# Global stylesheets #}
     {% bootstrap_css %}
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="{% static 'css/brynweb.css' %}">
+    {% stylesheet 'brynweb' %}
 
     {% block extra_css %}
       {# Override this in templates to add extra stylesheets #}
@@ -36,8 +36,7 @@
 
     {# Global javascript #}
     {% bootstrap_javascript jquery=1 %}
-    <script src="{% static 'js/brynweb.js' %}"></script>
-    <script src="{% static 'js/ajax-forms.js' %}"></script>
+    {% javascript 'brynweb' %}
     <script src="https://use.fontawesome.com/ab6fe5d3cc.js"></script>
 
     {% block extra_js %}
