@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "home/base.html" %}
 {% load bootstrap3 %}
 
 {% block full_jumbo %}
@@ -14,7 +14,9 @@
     <div class="row">
       <div class="col-md-10">
 
+      <div id="messages-container">
         {% bootstrap_messages %}
+      </div>
 
         {% for t in teams %}
           <h2>{{ t }}</h2>
@@ -26,49 +28,13 @@
           {% if t.verified and t.tenants_available %}
             <h3>Running servers</h3>
 
-            {% if not t.instances %}
+            {% if t.instances %}
+              <div class="instances-table-container" data-team-id="{{ t.id }}">
+                {% include "home/includes/instances_table.html" %}
+              </div>
+            {% else %}
               <p>No instances currently running.</p>
             {% endif %}
-
-            <div class="table-responsive">
-              <table class="table">
-                <tr>
-                  <th>Name</th>
-                  <th>Created</th>
-                  <th>Flavor</th>
-                  <th>Status</th>
-                  <th>IP address</th>
-                  <th>Tasks</th>
-                </tr>
-
-                {% for i in t.instances %}
-                  <tr>
-                    <td>{{ i.name }}</td>
-                    <td>{{ i.created }}</td>
-                    <td>{{ i.flavor }}</td>
-                    <td>{{ i.status }}</td>
-                    <td><a href="http://{{ i.ip }}">{{ i.ip }}</a></td>
-
-                    <td>
-                      <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Tasks
-                        <span class="caret"></span></button>
-                        <ul class="dropdown-menu">
-                          {% if i.status == 'SHUTOFF' %}
-                            <li><a href="{% url "start" t.pk i.id %}">Start</a></li>
-                          {% else %}
-                            <li><a href="{% url "stop" t.pk i.id %}">Stop</a></li>
-                            <li><a href="{% url "reboot" t.pk i.id %}">Reboot</a></li>
-                          {% endif %}
-                          <li><a href="{% url "terminate" t.pk i.id %}">Terminate</a></li>
-                        </ul>
-                      </div>
-                    </td>
-                  </tr>
-                {% endfor %}
-
-              </table>
-            </div>
 
             <h3>Launch a Genomics Virtual Laboratory server</h3>
 

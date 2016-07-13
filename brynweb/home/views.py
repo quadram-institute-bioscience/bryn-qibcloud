@@ -1,25 +1,28 @@
 from django.shortcuts import render
 from django.contrib.auth.forms import AuthenticationForm
 from userdb.forms import InvitationForm
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseBadRequest,\
+    JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 
 from userdb.models import Team, Region, TeamMember
-from openstack.models import Tenant, get_tenant_for_team
+from openstack.models import get_tenant_for_team
 from forms import LaunchServerForm
 from scripts.list_instances import list_instances
 from scripts.gvl_launch import launch_gvl
 
-# Create your views here.
+from .utils import messages_to_json
+
 
 def home(request):
     if not request.user.is_authenticated():
         form = AuthenticationForm()
-        context = {'form' : form}
+        context = {'form': form}
         return render(request, 'home/home.html', context)
     else:
         invite = InvitationForm(request.user)
@@ -38,8 +41,25 @@ def home(request):
 
             t.instances = list_instances(tenant)
 
-        context = {'invite' : invite, 'teams' : teams}
+        context = {'invite': invite, 'teams': teams}
         return render(request, 'home/dashboard.html', context)
+
+
+@login_required
+def get_instances_table(request):
+    if request.is_ajax():
+        team = get_object_or_404(Team, pk=request.GET['team_id'])
+        if not team.teammember_set.filter(user=request.user):
+            return HttpResponseBadRequest
+        tenant = get_tenant_for_team(team, Region.objects.get(name='warwick'))
+        team.instances = list_instances(tenant)
+        html = render_to_string(
+            'home/includes/instances_table.html',
+            {'t': team})
+        return JsonResponse({'instances_table': html})
+    else:
+        return HttpResponseBadRequest
+
 
 def loginpage(request):
     username = request.POST['username']
@@ -58,6 +78,7 @@ def loginpage(request):
         messages.error(request, 'Invalid username or password.')
     return HttpResponseRedirect('/')
 
+
 def logoutview(request):
     logout(request)
     return HttpResponseRedirect(reverse('home'))
@@ -74,6 +95,7 @@ def validate_and_get_tenant(request, teamid):
 
     tenant = get_tenant_for_team(team, Region.objects.get(name='warwick'))
     return tenant
+
 
 @login_required
 def launch(request, teamid):
@@ -93,6 +115,7 @@ def launch(request, teamid):
 
     return HttpResponseRedirect('/')
 
+
 def stop(request, teamid, uuid):
     tenant = validate_and_get_tenant(request, teamid)
     try:
@@ -100,7 +123,11 @@ def stop(request, teamid, uuid):
         messages.success(request, 'Server stopped.')
     except Exception, e:
         messages.error(request, e)
-    return HttpResponseRedirect('/')
+    if request.is_ajax():
+        return JsonResponse(messages_to_json(request))
+    else:
+        return HttpResponseRedirect('/')
+
 
 def start(request, teamid, uuid):
     tenant = validate_and_get_tenant(request, teamid)
@@ -109,7 +136,11 @@ def start(request, teamid, uuid):
         messages.success(request, 'Server started.')
     except Exception, e:
         messages.error(request, e)
-    return HttpResponseRedirect('/')
+    if request.is_ajax():
+        return JsonResponse(messages_to_json(request))
+    else:
+        return HttpResponseRedirect('/')
+
 
 def reboot(request, teamid, uuid):
     tenant = validate_and_get_tenant(request, teamid)
@@ -118,7 +149,11 @@ def reboot(request, teamid, uuid):
         messages.success(request, 'Server rebooted.')
     except Exception, e:
         messages.error(request, e)
-    return HttpResponseRedirect('/')
+    if request.is_ajax():
+        return JsonResponse(messages_to_json(request))
+    else:
+        return HttpResponseRedirect('/')
+
 
 def terminate(request, teamid, uuid): 
     tenant = validate_and_get_tenant(request, teamid)
@@ -127,5 +162,7 @@ def terminate(request, teamid, uuid):
         messages.success(request, 'Server terminated.')
     except Exception, e:
         messages.error(request, e)
-    return HttpResponseRedirect('/')
-
+    if request.is_ajax():
+        return JsonResponse(messages_to_json(request))
+    else:
+        return HttpResponseRedirect('/')

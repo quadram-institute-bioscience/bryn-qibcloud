@@ -142,6 +142,12 @@ PIPELINE = {
             ),
             'output_filename': 'css/brynweb.min.css',
         },
+        'home': {
+            'source_filenames': (
+                'home/css/dashboard.css',
+            ),
+            'output_filename': 'css/home.min.css',
+        },
     },
     'JAVASCRIPT': {
         'brynweb': {
@@ -149,6 +155,12 @@ PIPELINE = {
                 'js/brynweb.js',
             ),
             'output_filename': 'js/brynweb.min.js'
+        },
+        'home': {
+            'source_filenames': (
+                'home/js/dashboard.js',
+            ),
+            'output_filename': 'js/home.min.js'
         }
     }
 }
