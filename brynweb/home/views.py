@@ -10,9 +10,10 @@ from django.shortcuts import get_object_or_404
 
 from userdb.models import Team, Region, TeamMember
 from openstack.models import Tenant, get_tenant_for_team
-from forms import LaunchServerForm
+from forms import LaunchServerForm, LaunchImageServerForm
 from scripts.list_instances import list_instances
 from scripts.gvl_launch import launch_gvl
+from scripts.image_launch import launch_image
 
 # Create your views here.
 
@@ -92,6 +93,34 @@ def launch(request, teamid):
     messages.success(request, 'Successfully launched server!')
 
     return HttpResponseRedirect('/')
+
+@login_required
+def launchcustom(request, teamid):
+    tenant = validate_and_get_tenant(request, teamid)
+
+    if request.method == 'POST':
+        f = LaunchImageServerForm(tenant.get_images(), tenant.get_keys(), request.POST)
+        if not f.is_valid():
+            messages.error(request, 'Problem with form items.')
+        else:
+            try:
+                if f.cleaned_data['server_key_name_choice'] == u'bryn:new':
+                    key_name = f.cleaned_data['server_key_name']
+                    key_value = f.cleaned_data['server_key']
+                else:
+                    key_name = f.cleaned_data['server_key_name_choice']
+                    key_value = ''
+
+                launch_image(tenant, f.cleaned_data['server_name'], f.cleaned_data['server_image'], key_name, key_value, f.cleaned_data['server_type'])
+                return HttpResponseRedirect('/')
+            except Exception, e:
+                messages.error(request, 'Error launching: %s' % (e,))
+            messages.success(request, 'Successfully launched server!')
+    else:
+        f = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
+    return render(request, 'home/launch-image.html', context={'form' : f})
+    launch_image(tenant, 'test-ubuntu', '2ae0fe84-74d9-47fe-a744-408ec28026fd', 'launchkey', 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClUIKUlWckdyjIur2OhEFz4Xa2eKrpZe7ZgcVBnV3eUJi4WCPzB39aD4GvakwsUuKMGno3ipSCBI2Mcw2VfGD9oelCmPA/M6/cDvjijaQSgF5WBNoAbbaARtWyDSu+XMpbftNexmpc3CblamTm3DEgrOnhTcNJ+Imk+wBXpFUZOvfu/Ht/MBldbcgWp2RK8rgX+tCf5GUdgvA3Fz8YyvIOcIHIqSa9c9hfhes2hyLsrxe39norXUgsrgbMWlqqMYLc95TSYRFI+VYstoQ5b/6QHa/UloKkAR8LhVv8ntfRXVgvQtmUh3GzrYu326JW+kYSQ8hMX++v2w84vpL+50Rz nick@Nicks-MacBook-Pro.local', 'group')
+
 
 def stop(request, teamid, uuid):
     tenant = validate_and_get_tenant(request, teamid)

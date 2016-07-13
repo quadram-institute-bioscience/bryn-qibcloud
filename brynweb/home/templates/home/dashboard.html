@@ -81,7 +81,14 @@
                 </button>
               {% endbuttons %}
             </form>
+
+            <h3>Launch a custom server</h3>
+
+            <p><a href="{% url "launchcustom" t.pk %}">Launch a server from a different image</a></p>
+            
           {% endif %}
+
+            
 
           {% if t.verified and not t.tenants_available %}
             <p>Please check back tomorrow for the ability to launch your own virtual machines in the cloud. In the meantime you might like to browse <a href="http://discourse.climb.ac.uk">the CLIMB discussion forum</a>.</p>
