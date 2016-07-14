@@ -119,7 +119,7 @@ cluster_templates:
     cinder.volumes.set_bootable(volume, True)
 
     print volume.id
-    for n in xrange(20):
+    for n in xrange(30):
         v = cinder.volumes.get(volume.id)
         print v.status
         if v.status == 'available':
