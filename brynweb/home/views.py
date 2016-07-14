@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 
 from userdb.models import Team, Region, TeamMember
 from openstack.models import Tenant, get_tenant_for_team
-from forms import LaunchServerForm, LaunchImageServerForm
+from forms import LaunchServerForm, LaunchImageServerForm, RegionSelectForm
 from scripts.list_instances import list_instances
 from scripts.gvl_launch import launch_gvl
 from scripts.image_launch import launch_image
@@ -30,6 +30,9 @@ def home(request):
         invite = InvitationForm(request.user)
 
         teams = Team.objects.filter(teammember__user=request.user)
+
+        regionform = RegionSelectForm()
+
         for t in teams:
             if request.user == t.creator:
                 t.is_admin = True
@@ -45,7 +48,7 @@ def home(request):
             t.tenant_access = tenant
             t.instances = list_instances(tenant)
 
-        context = {'invite': invite, 'teams': teams}
+        context = {'invite': invite, 'teams': teams, 'regionform' : regionform}
         return render(request, 'home/dashboard.html', context)
 
 
@@ -207,3 +210,7 @@ def terminate(request, teamid, uuid):
         return JsonResponse(messages_to_json(request))
     else:
         return HttpResponseRedirect('/')
+
+
+def region_select(request):
+    return HttpResponseRedirect('/')

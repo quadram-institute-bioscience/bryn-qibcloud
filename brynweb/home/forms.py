@@ -2,6 +2,7 @@
 from django import forms
 from django.forms.widgets import PasswordInput
 from django.core.validators import RegexValidator
+from userdb.models import Region
 
 class LaunchServerForm(forms.Form):
     server_name = forms.CharField(label='Server name', max_length=50, required=True,
@@ -45,3 +46,5 @@ class LaunchImageServerForm(forms.Form):
     server_key_name = forms.CharField(label='Server key name', help_text='A descriptive name for your key', required=False)
     server_key = forms.CharField(label='Server key', help_text='Your SSH public server key for access to the serer.', widget=forms.Textarea, required=False)
 
+class RegionSelectForm(forms.Form):
+    region = forms.ModelChoiceField(queryset=Region.objects.all())

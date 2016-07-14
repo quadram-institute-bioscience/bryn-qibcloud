@@ -128,9 +128,63 @@
                   <p>Please check back tomorrow for the ability to launch your own virtual machines in the cloud. In the meantime you might like to browse <a href="http://discourse.climb.ac.uk">the CLIMB discussion forum</a>.</p>
                 {% endif %}
               </div>
+<<<<<<< Updated upstream
             </div>
           
           {# endif t.verified #}        
+=======
+            {% else %}
+              <p>No instances currently running.</p>
+            {% endif %}
+
+            <h3>Launch a Genomics Virtual Laboratory server</h3>
+
+            <form action="{% url "launch" t.pk %}" method="post" class="form">
+              {% csrf_token %}
+              {% bootstrap_form t.form %}
+              {% buttons %}
+                <button type="submit" class="btn btn-primary">
+                  {% bootstrap_icon "star" %} Launch Server
+                </button>
+              {% endbuttons %}
+            </form>
+
+            <h3>Launch a custom server</h3>
+
+            <p><a href="{% url "launchcustom" t.pk %}">Launch a server from a different image</a></p>
+
+            <h3>Advanced interface</h3>
+
+            <p>
+            For advanced options, please login to <a href="http://stack.warwick.climb.ac.uk">Horizon</a> with:
+            <ul>
+                <li>username - <font face="Courier">{{ t.tenant_access.get_auth_username }}</font>
+                <li>password - <font face="Courier">{{ t.tenant_access.auth_password }}</font>
+            </ul>
+            </p>
+
+            <h3>Region selector</h3>
+
+
+            <h3>Region selector</h3>
+
+            <form action="{% url "region-select" %}" method="post" class="form">
+              {% csrf_token %}
+              {% bootstrap_form regionform %}
+              {% buttons %}
+                <button type="submit" class="btn btn-primary">
+                  {% bootstrap_icon "star" %} Change Region
+                </button>
+              {% endbuttons %}
+            </form>
+            
+          {% endif %}
+
+            
+
+          {% if t.verified and not t.tenants_available %}
+            <p>Please check back tomorrow for the ability to launch your own virtual machines in the cloud. In the meantime you might like to browse <a href="http://discourse.climb.ac.uk">the CLIMB discussion forum</a>.</p>
+>>>>>>> Stashed changes
           {% endif %}
 
           {% if t.verified and t.is_admin %}
