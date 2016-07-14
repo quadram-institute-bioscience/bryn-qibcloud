@@ -18,8 +18,7 @@
 
       <td>
         <div class="dropdown">
-          <button class="btn btn-default dropdown-toggle pull-right" type="button" data-toggle="dropdown">Options
-          <span class="caret"></span></button>
+          <button class="btn btn-default dropdown-toggle pull-right" type="button" data-toggle="dropdown"><i class="fa fa-reorder"></i> Options</button>
           <ul class="dropdown-menu">
             {% if i.status == 'SHUTOFF' %}
               <li><a href="#" onclick="ajaxInstanceAction(event, '{% url "start" t.pk i.id %}');"><span class="text-success">Start</span></a></li>
