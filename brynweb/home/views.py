@@ -39,8 +39,10 @@ def home(request):
             if request.user == t.creator:
                 t.is_admin = True
 
+            t.active = True
             tenant = get_tenant_for_team(t, region)
             if not tenant:
+                t.active = False
                 messages.error(request, 'No tenant registered for this team!')
                 continue
 
