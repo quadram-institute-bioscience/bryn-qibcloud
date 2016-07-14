@@ -34,15 +34,15 @@ def home(request):
             if request.user == t.creator:
                 t.is_admin = True
 
-            t.form = LaunchServerForm()
+            t.launch_form = LaunchServerForm()
 
             tenant = get_tenant_for_team(t, Region.objects.get(name=region))
             if not tenant:
                 messages.error(request, 'No tenant registered for this team!')
                 continue
 
+            t.launch_custom_form = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
             t.tenant_access = tenant
-
             t.instances = list_instances(tenant)
 
         context = {'invite': invite, 'teams': teams}
@@ -52,7 +52,7 @@ def home(request):
 @login_required
 def get_instances_table(request):
     if request.is_ajax():
-        team = get_object_or_404(Team, pk=request.GET['team_id'])
+        team = get_object_or_404(Team, pk=request.GET.get('team_id'))
         if not team.teammember_set.filter(user=request.user):
             return HttpResponseBadRequest
         tenant = get_tenant_for_team(team, Region.objects.get(name='warwick'))
@@ -107,17 +107,22 @@ def launch(request, teamid):
 
     f = LaunchServerForm(request.POST)
     if not f.is_valid():
+        if request.is_ajax():
+            return JsonResponse({'errors': f.errors}, status=400)
         messages.error(request, 'Problem with form items.')
-        return render(request, 'home/launch-fail.html', context={'form' : f})
+        return render(request, 'home/launch-fail.html', context={'form': f})
 
     try:
         launch_gvl(tenant, f.cleaned_data['server_name'], f.cleaned_data['password'], f.cleaned_data['server_type'])
     except Exception, e:
         messages.error(request, 'Error launching: %s' % (e,))
+    else:
+        messages.success(request, 'Successfully launched server!')
 
-    messages.success(request, 'Successfully launched server!')
-
-    return HttpResponseRedirect('/')
+    if request.is_ajax():
+        return JsonResponse(messages_to_json(request))
+    else:
+        return HttpResponseRedirect('/')
 
 
 @login_required
@@ -127,6 +132,8 @@ def launchcustom(request, teamid):
     if request.method == 'POST':
         f = LaunchImageServerForm(tenant.get_images(), tenant.get_keys(), request.POST)
         if not f.is_valid():
+            if request.is_ajax():
+                return JsonResponse({'errors': f.errors}, status=400)
             messages.error(request, 'Problem with form items.')
         else:
             try:
@@ -136,12 +143,16 @@ def launchcustom(request, teamid):
                 else:
                     key_name = f.cleaned_data['server_key_name_choice']
                     key_value = ''
-
                 launch_image(tenant, f.cleaned_data['server_name'], f.cleaned_data['server_image'], key_name, key_value, f.cleaned_data['server_type'])
-                messages.success(request, 'Successfully launched server!')
-                return HttpResponseRedirect('/')
             except Exception, e:
                 messages.error(request, 'Error launching: %s' % (e,))
+            else:
+                messages.success(request, 'Successfully launched server!')
+
+        if request.is_ajax():
+            return JsonResponse(messages_to_json(request))
+        else:
+            return HttpResponseRedirect('/')
     else:
         f = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
     return render(request, 'home/launch-image.html', context={'form' : f})

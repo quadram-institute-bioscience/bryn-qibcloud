@@ -3,6 +3,7 @@
 
 {% block extra_js %}
   <script src="{% static 'home/js/dashboard.js' %}"></script>
+  <script src="{% static 'home/js/ajax-forms.js' %}"></script>
 {% endblock %}
 
 {% block full_jumbo %}
@@ -15,84 +16,146 @@
 
 {% block content %}
   <div class="container">
+
     <div class="row">
-      <div class="col-md-10">
-
-      <div id="messages-container">
+      <div class="col-md-12">
         {% bootstrap_messages %}
-      </div>
 
+        {% if teams|length > 1 %}
         {% for t in teams %}
-          <h2>{{ t }}</h2>
+          <ul class="nav nav-tabs">
+            <li class="{% if forloop.counter == 1 %}active{% endif %}"><a data-toggle="tab" href="#home">{{ t }}</a></li>
+          </ul>
+        {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="tab-content">
+      {% for t in teams %}
+        <div id="home" class="tab-pane fade in {% if forloop.counter == 1 %}active{% endif %}">
 
           {% if not t.verified %}
             <p>Your team details are currently being validated by our administration team. Please check back later to launch servers!</p>
-          {% endif %}
+          {% else %}
 
-          {% if t.verified and t.tenants_available %}
-            <h3>Running servers</h3>
+            <div class="row team-container">
+              <div class="col-md-12">
+                <h2>{{ t }}</h2>
 
-            {% if t.instances %}
-              <div class="instances-table-container" data-team-id="{{ t.id }}">
-                {% include "home/includes/instances_table.html" %}
+                {% if t.instances %}
+                  <h3>Running servers</h3>
+                  <div class="instances-table-container" data-team-id="{{ t.id }}">
+                    {% include "home/includes/instances_table.html" %}
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="panel-group" id="accordion">
+                        <div class="panel panel-info">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#launch-gvl{{ forloop.counter }}">
+                              Launch a Genomics Virtual Laboratory server</a>
+                            </h4>
+                          </div>
+                          <div id="launch-gvl{{ forloop.counter }}" class="panel-collapse collapse">
+                            <div class="panel-body">
+                              <form action="{% url "launch" t.pk %}" method="post" class="form launch-gvl-form">
+                                {% csrf_token %}
+                                {% bootstrap_form t.launch_form %}
+                                {% buttons %}
+                                  <button type="submit" class="btn btn-success">
+                                    <i class="fa fa-server"></i> Launch Server
+                                  </button>
+                                {% endbuttons %}
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="panel panel-info">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#launch-custom{{ forloop.counter }}">
+                              Launch a custom server</a>
+                            </h4>
+                          </div>
+                          <div id="launch-custom{{ forloop.counter }}" class="panel-collapse collapse">
+                            <div class="panel-body">
+                              <form action="{% url 'launchcustom' teamid=t.id %}" method="post" class="form launch-custom-form">
+                                {% csrf_token %}
+                                {% bootstrap_form t.launch_custom_form %}
+                                {% buttons %}
+                                  <button type="submit" class="btn btn-success">
+                                    <i class="fa fa-server"></i> Launch Server
+                                  </button>
+                                {% endbuttons %}
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="panel panel-info">
+                          <div class="panel-heading">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#advanced-interface{{ forloop.counter }}">
+                              Advanced Interface</a>
+                            </h4>
+                          </div>
+                          <div id="advanced-interface{{ forloop.counter }}" class="panel-collapse collapse">
+                            <div class="panel-body">
+                              <p>For advanced options, please login to <a href="http://stack.warwick.climb.ac.uk">Horizon</a> with:</p>
+                              <dl>
+                                <dt>username</dt><dd><font face="Courier">{{ t.tenant_access.get_auth_username }}</font></dd>
+                                <dt>password</dt><dd><font face="Courier">{{ t.tenant_access.auth_password }}</font></dd>
+                              </dl>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <div class="messages-container"></div>
+                    </div>
+
+                  </div>
+                  
+                {% else %}
+                  <p>No instances currently running.</p>
+                {% endif %}
+
+                {% if not t.tenants_available %}
+                  <p>Please check back tomorrow for the ability to launch your own virtual machines in the cloud. In the meantime you might like to browse <a href="http://discourse.climb.ac.uk">the CLIMB discussion forum</a>.</p>
+                {% endif %}
               </div>
-            {% else %}
-              <p>No instances currently running.</p>
-            {% endif %}
-
-            <h3>Launch a Genomics Virtual Laboratory server</h3>
-
-            <form action="{% url "launch" t.pk %}" method="post" class="form">
-              {% csrf_token %}
-              {% bootstrap_form t.form %}
-              {% buttons %}
-                <button type="submit" class="btn btn-primary">
-                  {% bootstrap_icon "star" %} Launch Server
-                </button>
-              {% endbuttons %}
-            </form>
-
-            <h3>Launch a custom server</h3>
-
-            <p><a href="{% url "launchcustom" t.pk %}">Launch a server from a different image</a></p>
-
-            <h3>Advanced interface</h3>
-
-            <p>
-            For advanced options, please login to <a href="http://stack.warwick.climb.ac.uk">Horizon</a> with:
-            <ul>
-                <li>username - <font face="Courier">{{ t.tenant_access.get_auth_username }}</font>
-                <li>password - <font face="Courier">{{ t.tenant_access.auth_password }}</font>
-            </ul>
-            </p>
-            
-          {% endif %}
-
-            
-
-          {% if t.verified and not t.tenants_available %}
-            <p>Please check back tomorrow for the ability to launch your own virtual machines in the cloud. In the meantime you might like to browse <a href="http://discourse.climb.ac.uk">the CLIMB discussion forum</a>.</p>
+            </div>
+          
+          {# endif t.verified #}        
           {% endif %}
 
           {% if t.verified and t.is_admin %}
-            <p>As group leader, you can invite new users to join your group using this invitation form:</p>
+            <div class="row">
+              <div class="col-md-6">
+                <p>As group leader, you can invite new users to join your group using this invitation form:</p>
 
-            <h2>Invite users</h2>
+                <h2>Invite users</h2>
 
-            <form action="{% url "invite" %}" method="post" class="form">
-              {% csrf_token %}
-              {% bootstrap_form invite %}
-              {% buttons %}
-                <button type="submit" class="btn btn-primary">
-                  {% bootstrap_icon "star" %} Invite User
-                </button>
-              {% endbuttons %}
-            </form>
+                <form action="{% url "invite" %}" method="post" class="form">
+                  {% csrf_token %}
+                  {% bootstrap_form invite %}
+                  {% buttons %}
+                    <button type="submit" class="btn btn-primary">
+                      {% bootstrap_icon "star" %} Invite User
+                    </button>
+                  {% endbuttons %}
+                </form>
+              </div>
+            </div>
           {% endif %}
 
-        {# -- end team -- #}
-        {%endfor %}
-      </div>
+        {# -- end team tab content-- #}
+        </div>
+      {%endfor %}
     </div>
   </div>
 {% endblock %}
