@@ -48,6 +48,7 @@
                   <div class="instances-table-container" data-team-id="{{ t.id }}">
                     {% include "home/includes/instances_table.html" %}
                   </div>
+                {% endif %}
 
                   <div class="row">
                     <div class="col-md-6">
@@ -143,10 +144,6 @@
 
                   </div>
                   
-                {% else %}
-                  <p>No instances currently running.</p>
-                {% endif %}
-
                 {% if not t.tenants_available %}
                   <p>Please check back tomorrow for the ability to launch your own virtual machines in the cloud. In the meantime you might like to browse <a href="http://discourse.climb.ac.uk">the CLIMB discussion forum</a>.</p>
                 {% endif %}
