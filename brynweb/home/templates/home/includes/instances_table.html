@@ -12,7 +12,14 @@
     <tr>
       <td>{{ i.name }}</td>
       <td>{{ i.created }}</td>
-      <td>{{ i.flavor }}</td>
+      <td>
+        {% if i.flavor == "climb.group" %}
+          <i class="fa fa-users text-success"></i>
+        {% elif i.flavor == "climb.user" %}
+          <i class="fa fa-user text-info"></i>
+        {% endif %}
+        {{ i.flavor }}
+      </td>
       <td>{{ i.status|title }}</td>
       <td><a href="http://{{ i.ip }}" target="_blank">{{ i.ip }}</a></td>
 
