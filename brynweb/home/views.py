@@ -21,17 +21,19 @@ from .utils import messages_to_json
 
 
 def home(request):
-    region = request.GET.get('region', 'warwick')
     if not request.user.is_authenticated():
         form = AuthenticationForm()
         context = {'form': form}
         return render(request, 'home/home.html', context)
     else:
+        region = request.user.userprofile.current_region
+
         invite = InvitationForm(request.user)
 
         teams = Team.objects.filter(teammember__user=request.user)
 
         regionform = RegionSelectForm()
+        regionform.initial['region'] = region
 
         for t in teams:
             if request.user == t.creator:
@@ -39,7 +41,7 @@ def home(request):
 
             t.launch_form = LaunchServerForm()
 
-            tenant = get_tenant_for_team(t, Region.objects.get(name=region))
+            tenant = get_tenant_for_team(t, region)
             if not tenant:
                 messages.error(request, 'No tenant registered for this team!')
                 continue
@@ -58,7 +60,7 @@ def get_instances_table(request):
         team = get_object_or_404(Team, pk=request.GET.get('team_id'))
         if not team.teammember_set.filter(user=request.user):
             return HttpResponseBadRequest
-        tenant = get_tenant_for_team(team, Region.objects.get(name='warwick'))
+        tenant = get_tenant_for_team(team, request.user.userprofile.current_region)
         team.instances = list_instances(tenant)
         html = render_to_string(
             'home/includes/instances_table.html',
@@ -100,7 +102,8 @@ def validate_and_get_tenant(request, teamid):
         messages.error(request, 'Access denied to this team.')
         return HttpResponseRedirect('/')
 
-    tenant = get_tenant_for_team(team, Region.objects.get(name='warwick'))
+    region = request.user.userprofile.current_region
+    tenant = get_tenant_for_team(team, region)
     return tenant
 
 
@@ -160,6 +163,7 @@ def launchcustom(request, teamid):
         f = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
     return render(request, 'home/launch-image.html', context={'form' : f})
 
+@login_required
 def stop(request, teamid, uuid):
     tenant = validate_and_get_tenant(request, teamid)
     try:
@@ -172,7 +176,7 @@ def stop(request, teamid, uuid):
     else:
         return HttpResponseRedirect('/')
 
-
+@login_required
 def start(request, teamid, uuid):
     tenant = validate_and_get_tenant(request, teamid)
     try:
@@ -185,7 +189,7 @@ def start(request, teamid, uuid):
     else:
         return HttpResponseRedirect('/')
 
-
+@login_required
 def reboot(request, teamid, uuid):
     tenant = validate_and_get_tenant(request, teamid)
     try:
@@ -198,7 +202,7 @@ def reboot(request, teamid, uuid):
     else:
         return HttpResponseRedirect('/')
 
-
+@login_required
 def terminate(request, teamid, uuid): 
     tenant = validate_and_get_tenant(request, teamid)
     try:
@@ -211,6 +215,14 @@ def terminate(request, teamid, uuid):
     else:
         return HttpResponseRedirect('/')
 
-
+@login_required
 def region_select(request):
+    if request.method == 'POST':
+        f = RegionSelectForm(request.POST)
+        if f.is_valid():
+            userprofile = request.user.userprofile
+            userprofile.current_region = f.cleaned_data['region']
+            userprofile.save()
+            messages.success(request, 'Region changed to %s' % (f.cleaned_data['region']))
+
     return HttpResponseRedirect('/')
