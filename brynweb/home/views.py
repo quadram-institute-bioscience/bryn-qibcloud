@@ -79,7 +79,6 @@ def loginpage(request):
         if user.userprofile.email_validated:
             if user.is_active:
                 login(request, user)
-                messages.success(request, 'You have been successfully logged in.')
             else:
                 messages.error(request, 'Sorry your account is disabled.')
         else:
