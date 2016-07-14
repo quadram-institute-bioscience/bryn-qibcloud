@@ -21,6 +21,7 @@ from .utils import messages_to_json
 
 
 def home(request):
+    region = request.GET.get('region', 'warwick')
     if not request.user.is_authenticated():
         form = AuthenticationForm()
         context = {'form': form}
@@ -35,7 +36,7 @@ def home(request):
 
             t.form = LaunchServerForm()
 
-            tenant = get_tenant_for_team(t, Region.objects.get(name='warwick'))
+            tenant = get_tenant_for_team(t, Region.objects.get(name=region))
             if not tenant:
                 messages.error(request, 'No tenant registered for this team!')
                 continue
@@ -137,11 +138,10 @@ def launchcustom(request, teamid):
                     key_value = ''
 
                 launch_image(tenant, f.cleaned_data['server_name'], f.cleaned_data['server_image'], key_name, key_value, f.cleaned_data['server_type'])
+                messages.success(request, 'Successfully launched server!')
                 return HttpResponseRedirect('/')
             except Exception, e:
                 messages.error(request, 'Error launching: %s' % (e,))
-            else:
-                messages.success(request, 'Successfully launched server!')
     else:
         f = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
     return render(request, 'home/launch-image.html', context={'form' : f})

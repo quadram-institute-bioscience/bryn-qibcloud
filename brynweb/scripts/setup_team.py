@@ -4,6 +4,43 @@ from userdb.models import Team, Region
 from openstack.client import OpenstackClient, get_admin_credentials
 from openstack.models import Tenant
 
+def setup_network(client, region, tenant_id):
+    neutron = client.get_neutron()
+
+    network = {'tenant_id'      : tenant_id,
+               'name'           : 'tenant1-private',
+               'admin_state_up' : True}
+    n = neutron.create_network({'network':network})
+
+    router = {"tenant_id"      : tenant_id,
+              "name"           : "tenant1-router",
+              "admin_state_up" : True}
+    r = neutron.create_router({'router':router})
+
+    public_network = region.regionsettings.public_network_id
+
+    neutron.add_gateway_router(r['router']['id'], {"network_id" : public_network})
+
+    # add subnet
+
+    subnet = {"name": "tenant1-192.168.0.0/24",
+              "enable_dhcp": True,
+              "network_id": n['network']['id'],
+              "tenant_id": tenant_id,
+              "allocation_pools": [{"start": "192.168.0.50", "end": "192.168.0.200"}],
+              "gateway_ip": "192.168.0.1",
+              "ip_version": 4,
+              "cidr": "192.168.0.0/24"}
+
+    s = neutron.create_subnet({'subnet' : subnet})
+
+    # router-interface-add
+
+    neutron.add_interface_router(r['router']['id'], {'subnet_id' : s['subnet']['id']})
+
+    return n['network']['id']
+
+
 def setup_tenant(team, region):
     client = OpenstackClient(region.name, **get_admin_credentials(region.name))
     nova = client.get_nova()
@@ -52,12 +89,18 @@ def setup_tenant(team, region):
     nova.security_group_rules.create(group.id, ip_protocol="tcp",
                                      from_port=443, to_port=443) 
 
+
+    if region.name == 'bham' or \
+       region.name == 'cardiff':
+        tenant.created_network_id = setup_network(client, region, tenant.created_tenant_id)
+
     tenant.save()
 
     team.tenants_available = True
     team.save()
 
+#openstack quota set --cores 128 --ram 650000 --gigabytes 10000 --snapshots 100 6a0797bfd90d4aba820c427d4e8a60d9
 
 def run():
-    t = Team.objects.get(name='Systems admin')
-    setup_tenant(t, Region.objects.get(name='warwick'))
+    t = Team.objects.get(pk=1)
+    setup_tenant(t, Region.objects.get(name='bham'))

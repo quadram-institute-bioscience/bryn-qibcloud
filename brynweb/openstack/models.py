@@ -10,6 +10,7 @@ class Tenant(Model):
     region = ForeignKey(Region)
     created_tenant_id = CharField(max_length=50)
     auth_password = CharField(max_length=50)
+    created_network_id = CharField(max_length=50)
 
     def get_tenant_name(self):
         return "bryn:%d_%s" % (self.team.pk, self.team.name)
@@ -65,12 +66,14 @@ class Tenant(Model):
 class RegionSettings(Model):
     region = OneToOneField(Region)
     gvl_image_id = CharField(max_length=50)
+    public_network_id = CharField(max_length=50)
+    requires_network_setup = BooleanField(default=False)
 
     def __str__(self):
         return str(self.region)
 
 def get_tenant_for_team(team, region):
-    tenant = Tenant.objects.filter(team=team, region=Region.objects.get(name='warwick'))
+    tenant = Tenant.objects.filter(team=team, region=Region.objects.get(name=region))
     if not tenant:
         return None
     if len(tenant) > 1:

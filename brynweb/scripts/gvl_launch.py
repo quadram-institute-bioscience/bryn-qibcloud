@@ -121,6 +121,7 @@ cluster_templates:
     print volume.id
     for n in xrange(20):
         v = cinder.volumes.get(volume.id)
+        print v.status
         if v.status == 'available':
             break
         time.sleep(1)
@@ -133,28 +134,35 @@ cluster_templates:
            'boot_index' : "0",
            'delete_on_termination' : True}]
 
+    if tenant.region.name == 'warwick':
+        network_id = '93ffd3af-c7cf-48d8-ba4c-ce59068c5c0a'
+    else:
+        network_id = tenant.created_network_id
+
     server = nova.servers.create(server_name,
            "",
            flavor=fl,
-    # birmingham
-    #       nics=[{'net-id' : '1f12e463-50d1-4bd9-9d41-fa704be32b66'}],
-    # cardiff - admin
-    #       nics=[{'net-id' : '156d6c96-2dca-42a5-8fcd-803c0a1b8aa2'}],
-    # cardiff - CLIMB_Demo
-    #       nics=[{'net-id' : '935903a7-40f9-48eb-a80b-07869d569f3a'}],
-    # warwick - public
-           nics=[{'net-id' : '93ffd3af-c7cf-48d8-ba4c-ce59068c5c0a'}],           
+           nics=[{'net-id' : network_id}],
            userdata=userdata,
            key_name=key_name,
            block_device_mapping_v2=bdm)
     print server
 
+    for n in xrange(0,20):
+        server = nova.servers.get(server.id)
+        print server.status
+
+    if tenant.region.name == 'cardiff':
+        f = nova.floating_ips.create('climb_external')
+        server.add_floating_ip(f)
+    elif tenant.region.name == 'bham':
+        f = nova.floating_ips.create('public')
+        server.add_floating_ip(f)
+
     return True
 
 def run():
     team = Team.objects.get(pk=1)
-    print team
-    tenant = Tenant.objects.filter(team=team, region=Region.objects.get(name='warwick'))[0]
-    print tenant
-    launch_gvl(tenant, 'test', 'testtest99', 'group')
+    tenant = Tenant.objects.filter(team=team, region=Region.objects.get(name='bham'))[0]
+    launch_gvl(tenant, 'test gvl bham', 'testtest99', 'group')
  
