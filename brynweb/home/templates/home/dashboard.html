@@ -105,7 +105,7 @@
                           </div>
                           <div id="advanced-interface{{ forloop.counter }}" class="panel-collapse collapse">
                             <div class="panel-body">
-                              <p>For advanced options, please login to <a href="http://stack.warwick.climb.ac.uk">Horizon</a> with:</p>
+                              <p>For advanced options, please login to <a href="{{ t.horizon_endpoint }}">Horizon</a> with:</p>
                               <dl>
                                 <dt>username</dt><dd><font face="Courier">{{ t.tenant_access.get_auth_username }}</font></dd>
                                 <dt>password</dt><dd><font face="Courier">{{ t.tenant_access.auth_password }}</font></dd>

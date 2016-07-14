@@ -46,6 +46,13 @@ def home(request):
                 messages.error(request, 'No tenant registered for this team!')
                 continue
 
+            if region.name == 'bham':
+                t.horizon_endpoint = 'http://birmingham.climb.ac.uk'
+            elif region.name == 'cardiff':
+                t.horizon_endpoint = 'http://cardiff.climb.ac.uk'
+            elif region.name == 'warwick':
+                t.horizon_endpoint = 'http://stack.warwick.climb.ac.uk'
+   
             t.launch_form = LaunchServerForm()
             t.launch_custom_form = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
             t.tenant_access = tenant
