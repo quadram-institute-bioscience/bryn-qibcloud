@@ -26,4 +26,5 @@ def delete_tenant(tenant):
 def run():
     t = Team.objects.get(name='Loman Labz')
     tenant = Tenant.objects.filter(team=t, region=Region.objects.get(name='bham'))[0]
-    delete_tenant(tenant)
+    print tenant
+    #delete_tenant(tenant)

@@ -39,13 +39,12 @@ def home(request):
             if request.user == t.creator:
                 t.is_admin = True
 
-            t.launch_form = LaunchServerForm()
-
             tenant = get_tenant_for_team(t, region)
             if not tenant:
                 messages.error(request, 'No tenant registered for this team!')
                 continue
 
+            t.launch_form = LaunchServerForm()
             t.launch_custom_form = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
             t.tenant_access = tenant
             t.instances = list_instances(tenant)

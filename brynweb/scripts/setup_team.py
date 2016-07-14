@@ -102,5 +102,5 @@ def setup_tenant(team, region):
 #openstack quota set --cores 128 --ram 650000 --gigabytes 10000 --snapshots 100 6a0797bfd90d4aba820c427d4e8a60d9
 
 def run():
-    t = Team.objects.all(pk__gte=1)
+    t = Team.objects.get(pk=1)
     setup_tenant(t, Region.objects.get(name='bham'))
