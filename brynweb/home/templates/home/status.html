@@ -1,0 +1,50 @@
+{% extends "home/base.html" %}
+{% load bootstrap3 static %}
+
+{% block extra_js %}
+  <script src="{% static 'home/js/dashboard.js' %}"></script>
+  <script src="{% static 'home/js/ajax-forms.js' %}"></script>
+{% endblock %}
+
+{% block full_jumbo %}
+  <div class="jumbotron">
+    <div class="container">
+      <h1>System Status</h1>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+
+    <div class="row">
+      <div class="col-md-12">
+        {% bootstrap_messages %}
+
+        {% for r in regions %}
+        <h2>{{ r.description }}</h2>
+
+        <p>Stats last updated {{ r.hypervisorstats.last_updated }}</p>
+
+        <table class="table table-responsive">
+         <tr>  
+          <th>Statistic</th>
+          <th>Value</th>
+         </tr>
+         <tr>  
+          <td>Virtual machines running</td>
+          <td>{{ r.hypervisorstats.running_vms }}</td>
+         </tr>
+         <tr>
+          <td>vCPUs</td>
+          <td>{{ r.hypervisorstats.vcpus_used }} / {{ r.hypervisorstats.vcpus }}</td>
+         </tr>
+         <tr>
+          <td>RAM</td>
+          <td>{{ r.hypervisorstats.memory_mb_used }} / {{ r.hypervisorstats.memory_mb }} (Mb)</td>
+         </tr>
+        </table>
+        {% endfor %}
+    </div>
+  </div>
+{% endblock %}

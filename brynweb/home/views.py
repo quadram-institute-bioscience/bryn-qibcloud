@@ -247,3 +247,10 @@ def region_select(request):
             messages.success(request, 'Region changed to %s' % (f.cleaned_data['region']))
 
     return HttpResponseRedirect('/')
+
+
+def status(request):
+    regions = Region.objects.all()
+    return render(request, 'home/status.html', context={'regions' : regions})
+
+

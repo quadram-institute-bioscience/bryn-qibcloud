@@ -84,6 +84,23 @@ class ActionLog(Model):
             error_type = 'SUCCESS'
         return "%s %s %s %s" % (self.date, error_type, self.tenant, self.message)
 
+class HypervisorStats(Model):
+    region = OneToOneField(Region, on_delete=CASCADE)
+
+    last_updated = DateTimeField(auto_now=True)
+
+    hypervisor_count = IntegerField()
+    disk_available_least = IntegerField()
+    free_disk_gb = IntegerField()
+    free_ram_mb = IntegerField()
+    local_gb = IntegerField()
+    local_gb_used = IntegerField()
+    memory_mb = IntegerField()
+    memory_mb_used = IntegerField()
+    running_vms = IntegerField()
+    vcpus = IntegerField()
+    vcpus_used = IntegerField()
+
 class RegionSettings(Model):
     region = OneToOneField(Region)
     gvl_image_id = CharField(max_length=50)
