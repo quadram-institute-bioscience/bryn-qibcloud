@@ -62,6 +62,7 @@ class InvitationAdmin(admin.ModelAdmin):
 admin.site.register(Team, TeamAdmin)
 admin.site.register(TeamMember)
 admin.site.register(Invitation, InvitationAdmin)
+admin.site.register(Region)
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile

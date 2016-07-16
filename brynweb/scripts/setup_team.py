@@ -8,12 +8,12 @@ def setup_network(client, region, tenant_id):
     neutron = client.get_neutron()
 
     network = {'tenant_id'      : tenant_id,
-               'name'           : 'tenant1-private',
+               'name'           : 'bryn:tenant-private',
                'admin_state_up' : True}
     n = neutron.create_network({'network':network})
 
     router = {"tenant_id"      : tenant_id,
-              "name"           : "tenant1-router",
+              "name"           : "bryn:tenant-router",
               "admin_state_up" : True}
     r = neutron.create_router({'router':router})
 

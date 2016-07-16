@@ -40,6 +40,14 @@ def home(request):
                 t.is_admin = True
 
             t.active = True
+
+            ## check if region is available
+
+            if region.disabled:
+                messages.error(request, 'The %s region is currently unavailable. Check the community forum for service status.' % (region.name))
+                t.active = False
+                continue
+
             tenant = get_tenant_for_team(t, region)
             if not tenant:
                 t.active = False

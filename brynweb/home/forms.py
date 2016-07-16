@@ -47,4 +47,4 @@ class LaunchImageServerForm(forms.Form):
     server_key = forms.CharField(label='Server key', help_text='Your SSH public server key for access to the serer.', widget=forms.Textarea, required=False)
 
 class RegionSelectForm(forms.Form):
-    region = forms.ModelChoiceField(queryset=Region.objects.all())
+    region = forms.ModelChoiceField(queryset=Region.objects.filter(disabled=False))

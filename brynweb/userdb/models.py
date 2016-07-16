@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse
 class Region(Model):
     name = CharField(max_length=40)
     description = CharField(max_length=40)
+    disabled = BooleanField(default=False)
 
     def __str__(self):
         return self.name
