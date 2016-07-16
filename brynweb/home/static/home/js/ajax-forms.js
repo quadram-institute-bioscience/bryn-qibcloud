@@ -112,7 +112,9 @@ $(function() {
 
   function refreshInstanceAfterForm(form) {
     var tableContainer = $(form).closest('.team-container').find('.instances-table-container');
-    refreshInstanceTable(tableContainer);
+    $('html, body').stop().animate({scrollTop: tableContainer.offset().top}, '500', 'swing');
+    setTimeout(refreshInstanceTable, 2000, tableContainer);
+    setTimeout(refreshInstanceTable, 10000, tableContainer);
   }
 
   // AJAX post on submit
