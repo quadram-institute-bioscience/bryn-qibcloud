@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 
 from userdb.models import Team, Region, TeamMember
-from openstack.models import Tenant, get_tenant_for_team
+from openstack.models import Tenant, get_tenant_for_team, ActionLog
 from forms import LaunchServerForm, LaunchImageServerForm, RegionSelectForm
 from scripts.list_instances import list_instances
 from scripts.gvl_launch import launch_gvl
@@ -121,6 +121,22 @@ def validate_and_get_tenant(request, teamid):
     tenant = get_tenant_for_team(team, region)
     return tenant
 
+def launch_server(request, launch_type, tenant, server_name, *args, **kwargs):
+    log = ActionLog(tenant=tenant)
+    try:
+        if launch_type == 'gvl':
+            launch_gvl(tenant, server_name, *args, **kwargs)
+        elif launch_type == 'image':
+            launch_image(tenant, server_name, *args, **kwargs)
+    except Exception, e:
+        messages.error(request, 'Error launching: %s' % (e,))
+        log.error = True
+        log.message = e
+    else:
+        messages.success(request, 'Successfully launched server!')
+        log.error = False
+        log.message = "Server %s launched" % (server_name,)
+    log.save()
 
 @login_required
 def launch(request, teamid):
@@ -133,12 +149,7 @@ def launch(request, teamid):
         messages.error(request, 'Problem with form items.')
         return render(request, 'home/launch-fail.html', context={'form': f})
 
-    try:
-        launch_gvl(tenant, f.cleaned_data['server_name'], f.cleaned_data['password'], f.cleaned_data['server_type'])
-    except Exception, e:
-        messages.error(request, 'Error launching: %s' % (e,))
-    else:
-        messages.success(request, 'Successfully launched server!')
+    launch_server(request, 'gvl', tenant, f.cleaned_data['server_name'], f.cleaned_data['password'], f.cleaned_data['server_type'])
 
     if request.is_ajax():
         return JsonResponse(messages_to_json(request))
@@ -157,18 +168,13 @@ def launchcustom(request, teamid):
                 return JsonResponse({'errors': f.errors}, status=400)
             messages.error(request, 'Problem with form items.')
         else:
-            try:
-                if f.cleaned_data['server_key_name_choice'] == u'bryn:new':
-                    key_name = f.cleaned_data['server_key_name']
-                    key_value = f.cleaned_data['server_key']
-                else:
-                    key_name = f.cleaned_data['server_key_name_choice']
-                    key_value = ''
-                launch_image(tenant, f.cleaned_data['server_name'], f.cleaned_data['server_image'], key_name, key_value, f.cleaned_data['server_type'])
-            except Exception, e:
-                messages.error(request, 'Error launching: %s' % (e,))
+            if f.cleaned_data['server_key_name_choice'] == u'bryn:new':
+                key_name = f.cleaned_data['server_key_name']
+                key_value = f.cleaned_data['server_key']
             else:
-                messages.success(request, 'Successfully launched server!')
+                key_name = f.cleaned_data['server_key_name_choice']
+                key_value = ''
+            launch_server(request, 'image', tenant, f.cleaned_data['server_name'], f.cleaned_data['server_image'], key_name, key_value, f.cleaned_data['server_type'])
 
         if request.is_ajax():
             return JsonResponse(messages_to_json(request))

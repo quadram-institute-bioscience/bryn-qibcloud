@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db.models import *
 from userdb.models import Team, Region
 from openstack.client import OpenstackClient
+from django_slack import slack_message
 import uuid
 
 class Tenant(Model):
@@ -62,6 +63,26 @@ class Tenant(Model):
 
     def __str__(self):
         return "%s - %s" % (self.get_tenant_name(), self.region)
+
+class ActionLog(Model):
+    tenant = ForeignKey(Tenant)
+    date = DateTimeField(auto_now_add=True)
+    message = TextField()
+    error = BooleanField()
+
+    def save(self, *args, **kwargs):
+        super(ActionLog, self).save(self, *args, **kwargs)
+        if self.error:
+            slack_message('openstack/error.slack', {'log' : self})
+        else:
+            slack_message('openstack/success.slack', {'log' : self})
+
+    def __str__(self):
+        if self.error:
+            error_type = 'ERROR'
+        else:
+            error_type = 'SUCCESS'
+        return "%s %s %s %s" % (self.date, error_type, self.tenant, self.message)
 
 class RegionSettings(Model):
     region = OneToOneField(Region)

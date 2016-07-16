@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'discourse',
     'openstack',
     'pipeline',
+    'django_slack',
 ]
 
 MIDDLEWARE_CLASSES = [
