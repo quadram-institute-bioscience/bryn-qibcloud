@@ -50,7 +50,7 @@ def launch_image(tenant, server_name, image_id, auth_key_name, auth_key_value, s
     server = nova.servers.create(server_name,
            "",
            flavor=fl,
-           nics=[{'net-id' : tenant.get_network_id()],
+           nics=[{'net-id' : tenant.get_network_id()}],
            key_name=key_name,
            block_device_mapping_v2=bdm)
     print server
