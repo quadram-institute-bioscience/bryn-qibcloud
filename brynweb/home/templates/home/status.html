@@ -25,7 +25,6 @@
         <h2>{{ r.description }}</h2>
 
         <p>Stats last updated {{ r.hypervisorstats.last_updated }}</p>
-
         <table class="table table-responsive">
          <tr>  
           <th>Statistic</th>
@@ -36,11 +35,11 @@
           <td>{{ r.hypervisorstats.running_vms }}</td>
          </tr>
          <tr>
-          <td>vCPUs</td>
+          <td>vCPU utilisation (used / free)</td>
           <td>{{ r.hypervisorstats.vcpus_used }} / {{ r.hypervisorstats.vcpus }}</td>
          </tr>
          <tr>
-          <td>RAM</td>
+          <td>RAM utilisation (used / free in Mb)</td>
           <td>{{ r.hypervisorstats.memory_mb_used }} / {{ r.hypervisorstats.memory_mb }} (Mb)</td>
          </tr>
         </table>
