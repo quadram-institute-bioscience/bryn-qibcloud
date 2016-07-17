@@ -61,6 +61,13 @@ class Tenant(Model):
         server = self.get_server(uuid)
         server.reboot(reboot_type='HARD') 
 
+    def get_network_id(self):
+        if self.regionsettings.requires_network_setup:
+            return self.created_network_id
+        else:
+            #i.e. warwick
+            return self.regionsettings.public_network_id
+
     def __str__(self):
         return "%s - %s" % (self.get_tenant_name(), self.region)
 

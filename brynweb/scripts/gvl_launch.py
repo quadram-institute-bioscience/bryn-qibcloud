@@ -134,15 +134,10 @@ cluster_templates:
            'boot_index' : "0",
            'delete_on_termination' : True}]
 
-    if tenant.region.name == 'warwick':
-        network_id = '93ffd3af-c7cf-48d8-ba4c-ce59068c5c0a'
-    else:
-        network_id = tenant.created_network_id
-
     server = nova.servers.create(server_name,
            "",
            flavor=fl,
-           nics=[{'net-id' : network_id}],
+           nics=[{'net-id' : tenant.get_network_id()}],
            userdata=userdata,
            key_name=key_name,
            block_device_mapping_v2=bdm)

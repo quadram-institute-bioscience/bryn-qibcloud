@@ -50,14 +50,7 @@ def launch_image(tenant, server_name, image_id, auth_key_name, auth_key_value, s
     server = nova.servers.create(server_name,
            "",
            flavor=fl,
-    # birmingham
-    #       nics=[{'net-id' : '1f12e463-50d1-4bd9-9d41-fa704be32b66'}],
-    # cardiff - admin
-    #       nics=[{'net-id' : '156d6c96-2dca-42a5-8fcd-803c0a1b8aa2'}],
-    # cardiff - CLIMB_Demo
-    #       nics=[{'net-id' : '935903a7-40f9-48eb-a80b-07869d569f3a'}],
-    # warwick - public
-           nics=[{'net-id' : '93ffd3af-c7cf-48d8-ba4c-ce59068c5c0a'}],           
+           nics=[{'net-id' : tenant.get_network_id()],
            key_name=key_name,
            block_device_mapping_v2=bdm)
     print server
