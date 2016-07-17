@@ -2,17 +2,10 @@
 from openstack.client import OpenstackClient
 from openstack.models import Tenant
 from userdb.models import Team, Region
+from openstack.utils import add_floating_ip, add_keypair
 import sys
 import yaml
 import time
-
-def add_keypair(nova, keyname, keyvalue):
-    for k in nova.keypairs.list():
-        if k.name == keyname:
-            return k.name
-
-    keypair = nova.keypairs.create(name=keyname, public_key=keyvalue)
-    return keyname
 
 def launch_image(tenant, server_name, image_id, auth_key_name, auth_key_value, server_type='group'):
     client = OpenstackClient(tenant.region.name,
@@ -53,7 +46,10 @@ def launch_image(tenant, server_name, image_id, auth_key_name, auth_key_value, s
            nics=[{'net-id' : tenant.get_network_id()}],
            key_name=key_name,
            block_device_mapping_v2=bdm)
-    print server
+
+    time.sleep(1)
+
+    add_floating_ip(tenant, server)
 
     return True
 

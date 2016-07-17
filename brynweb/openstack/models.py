@@ -113,6 +113,7 @@ class RegionSettings(Model):
     gvl_image_id = CharField(max_length=50)
     public_network_id = CharField(max_length=50)
     requires_network_setup = BooleanField(default=False)
+    floating_ip_pool = CharField(max_length=50, blank=True)
 
     def __str__(self):
         return str(self.region)

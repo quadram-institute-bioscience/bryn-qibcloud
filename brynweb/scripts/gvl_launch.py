@@ -2,7 +2,7 @@
 from openstack.client import OpenstackClient
 from openstack.models import Tenant
 from userdb.models import Team, Region
-from scripts.image_launch import add_keypair
+from openstack.utils import add_keypair, add_floating_ip
 
 import sys
 import yaml
@@ -143,16 +143,9 @@ cluster_templates:
            block_device_mapping_v2=bdm)
     print server
 
-    for n in xrange(0,20):
-        server = nova.servers.get(server.id)
-        print server.status
+    time.sleep(1)
 
-    if tenant.region.name == 'cardiff':
-        f = nova.floating_ips.create('climb_external')
-        server.add_floating_ip(f)
-    elif tenant.region.name == 'bham':
-        f = nova.floating_ips.create('public')
-        server.add_floating_ip(f)
+    add_floating_ip(tenant, server)
 
     return True
 
