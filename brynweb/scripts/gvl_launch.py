@@ -145,7 +145,7 @@ cluster_templates:
 
     time.sleep(1)
 
-    add_floating_ip(tenant, server)
+    add_floating_ip(nova, tenant, server)
 
     return True
 

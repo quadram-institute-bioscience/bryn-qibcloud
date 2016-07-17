@@ -1,5 +1,5 @@
 
-def add_floating_ip(tenant, server):
+def add_floating_ip(nova, tenant, server):
     if tenant.region.regionsettings.requires_network_setup:
         f = nova.floating_ips.create(tenant.region.regionsettings.floating_ip_pool)
         server.add_floating_ip(f)

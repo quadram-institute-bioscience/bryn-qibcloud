@@ -49,7 +49,7 @@ def launch_image(tenant, server_name, image_id, auth_key_name, auth_key_value, s
 
     time.sleep(1)
 
-    add_floating_ip(tenant, server)
+    add_floating_ip(nova, tenant, server)
 
     return True
 
