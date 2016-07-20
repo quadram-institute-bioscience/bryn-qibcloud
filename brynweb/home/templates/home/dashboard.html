@@ -43,12 +43,10 @@
               <div class="col-md-12">
                 <h2>{{ t }}</h2>
 
-                {% if t.instances %}
-                  <h3>Running servers</h3>
-                  <div class="instances-table-container" data-team-id="{{ t.id }}">
-                    {% include "home/includes/instances_table.html" %}
-                  </div>
-                {% endif %}
+                <h3>Running servers</h3>
+                <div class="instances-table-container" data-team-id="{{ t.id }}">
+                  {% include "home/includes/instances_table.html" %}
+                </div>
 
                   <div class="row">
                     <div class="col-md-6">
