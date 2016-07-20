@@ -20,13 +20,15 @@ def list_instances(tenant):
         try:
             ip = s.addresses['public'][0]['addr']
         except:
-            try:
+            block = None
+            if 'tenant1-private' in s.addresses:
                 block = s.addresses['tenant1-private']
+            elif 'bryn:tenant-private' in s.addresses:
+                block = s.addresses['bryn:tenant-private']
+            if block:
                 for a in block:
                     if a['OS-EXT-IPS:type'] == 'floating':
-                        ip = a['addr'] 
-            except:
-                pass
+                        ip = a['addr']
 
         servers.append({'id' : s.id,
                         'name' : s.name,
