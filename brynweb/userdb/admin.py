@@ -21,26 +21,24 @@ class TeamAdmin(admin.ModelAdmin):
             n += 1
         self.message_user(request, "%s teams were sent notification email" % (n,))
 
-    def create_warwick_tenant(self, request, queryset):
+    def create_tenant(self, region, request, queryset):
         n = 0
         for t in queryset:
-            setup_tenant(t, Region.objects.get(name='warwick'))
+            try:
+                setup_tenant(t, region)
+            except Exception, e:
+                self.message_user(request, "Failed to setup tenant %s: %s" % (t, e))
             n += 1
         self.message_user(request, "Created %s tenants" % (n,))
+
+    def create_warwick_tenant(self, request, queryset):
+        self.create_tenant(Region.objects.get(name='warwick'), request, queryset)
 
     def create_bham_tenant(self, request, queryset):
-        n = 0
-        for t in queryset:
-            setup_tenant(t, Region.objects.get(name='bham'))
-            n += 1
-        self.message_user(request, "Created %s tenants" % (n,))
+        self.create_tenant(Region.objects.get(name='bham'), request, queryset)
 
     def create_cardiff_tenant(self, request, queryset):
-        n = 0
-        for t in queryset:
-            setup_tenant(t, Region.objects.get(name='cardiff'))
-            n += 1
-        self.message_user(request, "Created %s tenants" % (n,))
+        self.create_tenant(Region.objects.get(name='cardiff'), request, queryset)
 
     def setup_teams(self, request, queryset):
         teams = [str(t.pk) for t in queryset]
