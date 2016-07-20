@@ -18,7 +18,7 @@ class LaunchServerForm(forms.Form):
                                      message='Only letters, numbers and hyphens in server name',
                                 )
                               ])
-    server_type = forms.ChoiceField(choices=(SERVER_TYPE_CHOICES))
+    server_type = forms.ChoiceField(choices=SERVER_TYPE_CHOICES)
 
     password = forms.CharField(label='New server password', widget=PasswordInput, required=True)
 
@@ -46,7 +46,7 @@ class LaunchImageServerForm(forms.Form):
                                      message='Only letters, numbers and hyphens in server name',
                                 )
                               ])
-    server_type = forms.ChoiceField(choices=(('group', 'Group server'), ('user', 'User server')))
+    server_type = forms.ChoiceField(choices=SERVER_TYPE_CHOICES)
     server_image = forms.ChoiceField(required=True)
 
     server_key_name_choice = forms.ChoiceField(required=True)
