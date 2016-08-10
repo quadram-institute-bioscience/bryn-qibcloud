@@ -30,10 +30,15 @@ def list_instances(tenant):
                     if a['OS-EXT-IPS:type'] == 'floating':
                         ip = a['addr']
 
+        try:
+            flavor = nova.flavors.get(s.flavor['id']).name
+        except:
+            flavor = 'unknown'
+
         servers.append({'id' : s.id,
                         'name' : s.name,
                         'created' : s.created,
-                        'flavor' : nova.flavors.get(s.flavor['id']).name,
+                        'flavor' : flavor,
                         'status' : s.status,
                         'ip' : ip})
 
