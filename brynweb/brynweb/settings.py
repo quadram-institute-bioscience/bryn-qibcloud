@@ -217,6 +217,11 @@ BOOTSTRAP3 = {
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
     'handlers': {
         'console': {
             'level': 'DEBUG',
@@ -226,6 +231,17 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.FileHandler',
             'filename': BASE_DIR + "/../logfile",
+        },
+        'slack_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django_slack.log.SlackExceptionHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'level': 'ERROR',
+            'handlers': ['slack_admins'],
         },
     },
     'root': {

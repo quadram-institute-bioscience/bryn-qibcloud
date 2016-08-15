@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from userdb.models import Team, Region
 from openstack.client import OpenstackClient, get_admin_credentials
 from openstack.models import Tenant
+from scripts.set_quotas import set_quota
 
 def setup_network(client, region, tenant_id):
     neutron = client.get_neutron()
@@ -31,6 +32,10 @@ def setup_network(client, region, tenant_id):
               "gateway_ip": "192.168.0.1",
               "ip_version": 4,
               "cidr": "192.168.0.0/24"}
+
+    # add name servers
+
+
 
     s = neutron.create_subnet({'subnet' : subnet})
 
@@ -93,6 +98,8 @@ def setup_tenant(team, region):
     if region.name == 'bham' or \
        region.name == 'cardiff':
         tenant.created_network_id = setup_network(client, region, tenant.created_tenant_id)
+
+    set_quota(tenant)
 
     tenant.save()
 

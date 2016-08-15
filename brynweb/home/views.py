@@ -91,19 +91,22 @@ def get_instances_table(request):
 
 
 def loginpage(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        if user.userprofile.email_validated:
-            if user.is_active:
-                login(request, user)
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.userprofile.email_validated:
+                if user.is_active:
+                    login(request, user)
+                else:
+                    messages.error(request, 'Sorry your account is disabled.')
             else:
-                messages.error(request, 'Sorry your account is disabled.')
+                messages.error(request, 'Please validate your email address by following the link sent to your email first.')
         else:
-            messages.error(request, 'Please validate your email address by following the link sent to your email first.')
+            messages.error(request, 'Invalid username or password.')
     else:
-        messages.error(request, 'Invalid username or password.')
+        messages.error(request, 'No authentication data sent.')
     return HttpResponseRedirect('/')
 
 
