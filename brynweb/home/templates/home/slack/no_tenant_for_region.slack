@@ -1,0 +1,5 @@
+{% extends django_slack %}
+
+{% block text %}
+    {{ team.name }} just tried to use {{ region.name }}, but they have no tenant!
+{% endblock %}
