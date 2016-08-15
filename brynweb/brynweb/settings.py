@@ -3,7 +3,6 @@ Django settings for brynweb project.
 """
 
 import os
-from locals import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -234,3 +233,8 @@ LOGGING = {
         'handlers': ['console', 'logfile']
     },
 }
+
+try:
+    from .locals import *
+except ImportError:
+    pass

@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
+from django_slack import slack_message
 
 from userdb.models import Team, Region, TeamMember
 from openstack.models import Tenant, get_tenant_for_team, ActionLog
@@ -52,6 +53,8 @@ def home(request):
             if not tenant:
                 t.active = False
                 messages.error(request, 'No tenant registered for this team!')
+                slack_message('home/slack/no_tenant_for_region.slack',
+                              {'team': t, 'region': region})
                 continue
 
             if region.name == 'bham':
@@ -60,7 +63,7 @@ def home(request):
                 t.horizon_endpoint = 'http://cardiff.climb.ac.uk'
             elif region.name == 'warwick':
                 t.horizon_endpoint = 'http://stack.warwick.climb.ac.uk'
-   
+
             t.launch_form = LaunchServerForm()
             t.launch_custom_form = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
             t.tenant_access = tenant
@@ -77,7 +80,8 @@ def get_instances_table(request):
         if not team.teammember_set.filter(user=request.user):
             return HttpResponseBadRequest
         tenant = get_tenant_for_team(team, request.user.userprofile.current_region)
-        team.instances = list_instances(tenant)
+        if tenant:
+            team.instances = list_instances(tenant)
         html = render_to_string(
             'home/includes/instances_table.html',
             {'t': team})
@@ -252,5 +256,3 @@ def region_select(request):
 def status(request):
     regions = Region.objects.all()
     return render(request, 'home/status.html', context={'regions' : regions})
-
-
