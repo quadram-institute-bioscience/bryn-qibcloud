@@ -250,6 +250,11 @@ LOGGING = {
     },
 }
 
+# SLACK
+
+SLACK_FAIL_SILENTLY = True
+SLACK_BACKEND = 'django_slack.backends.UrllibBackend'
+
 try:
     from .locals import *
 except ImportError:
