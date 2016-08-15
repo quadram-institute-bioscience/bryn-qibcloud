@@ -250,8 +250,6 @@ LOGGING = {
     },
 }
 
-# SLACK
-
 SLACK_FAIL_SILENTLY = True
 SLACK_BACKEND = 'django_slack.backends.UrllibBackend'
 
