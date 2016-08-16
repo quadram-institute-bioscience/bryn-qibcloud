@@ -53,8 +53,9 @@ def home(request):
             if not tenant:
                 t.active = False
                 messages.error(request, 'No tenant registered for this team!')
-                slack_message('home/slack/no_tenant_for_region.slack',
-                              {'team': t, 'region': region})
+                slack_message(
+                    'home/slack/no_tenant_for_region.slack',
+                    {'team': t, 'region': region, 'user': request.user})
                 continue
 
             if region.name == 'bham':
