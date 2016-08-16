@@ -26,8 +26,7 @@ class LaunchServerForm(forms.Form):
 class LaunchImageServerForm(forms.Form):
     def __init__(self, images, keys, *args, **kwargs):
         super(LaunchImageServerForm, self).__init__(*args, **kwargs)
-        self.fields['server_image'].choices = images
-        print type(keys)
+        self.fields['server_image'].choices = sorted(images, key=lambda i: i[1])
         self.fields['server_key_name_choice'].choices = keys + [('bryn:new', 'Make new key'),]
 
     def clean(self):
