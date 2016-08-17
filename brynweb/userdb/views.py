@@ -35,7 +35,7 @@ def register(request):
 
             messages.success(request, 'Thank you for registering. Your request will be approved by an administrator and you will receive an email with further instructions')
 
-            return HttpResponseRedirect(reverse('home'))
+            return HttpResponseRedirect(reverse('home:home'))
     else:
         userform = CustomUserCreationForm()
         teamform = TeamForm()
@@ -58,7 +58,7 @@ def invite(request):
                 messages.success(request, 'Invitation sent.')
     else:
         messages.error(request, 'No information supplied for invitation')
-    return HttpResponseRedirect(reverse('home'))
+    return HttpResponseRedirect(reverse('home:home'))
 
 def institution_typeahead(request):
     q = request.GET.get('q', '')
@@ -97,14 +97,14 @@ def accept_invite(request, uuid):
             i.save()
 
             messages.success(request, 'Congratulations you are now a member of %s. Please log-in to get started.' % (member.team))
-            return HttpResponseRedirect(reverse('home'))
+            return HttpResponseRedirect(reverse('home:home'))
         else:
             messages.error(request, 'Invalid values supplied for form.')
     else:
         i = Invitation.objects.get(uuid=uuid)
         if i.accepted:
             messages.error(request, 'This invitation has already been claimed!')
-            return HttpResponseRedirect(reverse('home'))
+            return HttpResponseRedirect(reverse('home:home'))
 
         userform = CustomUserCreationForm()
         userform.initial['email'] = i.email
@@ -117,5 +117,5 @@ def validate_email(request, uuid):
     profile.email_validated = True
     profile.save()
     messages.success(request, 'Thank you for confirming your email address, you can now log-in to get started.')
-    return HttpResponseRedirect(reverse('home'))
+    return HttpResponseRedirect(reverse('home:home'))
 

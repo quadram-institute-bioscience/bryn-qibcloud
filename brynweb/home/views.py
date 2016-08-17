@@ -113,7 +113,7 @@ def loginpage(request):
 
 def logoutview(request):
     logout(request)
-    return HttpResponseRedirect(reverse('home'))
+    return HttpResponseRedirect(reverse('home:home'))
 
 
 def validate_and_get_tenant(request, teamid):

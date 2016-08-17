@@ -61,7 +61,7 @@
                           </div>
                           <div id="launch-gvl{{ forloop.counter }}" class="panel-collapse collapse">
                             <div class="panel-body">
-                              <form action="{% url "launch" t.pk %}" method="post" class="form launch-gvl-form">
+                              <form action="{% url 'home:launch' t.pk %}" method="post" class="form launch-gvl-form">
                                 {% csrf_token %}
                                 {% bootstrap_form t.launch_form %}
                                 {% buttons %}
@@ -82,7 +82,7 @@
                           </div>
                           <div id="launch-custom{{ forloop.counter }}" class="panel-collapse collapse">
                             <div class="panel-body">
-                              <form action="{% url 'launchcustom' teamid=t.id %}" method="post" class="form launch-custom-form">
+                              <form action="{% url 'home:launchcustom' teamid=t.id %}" method="post" class="form launch-custom-form">
                                 {% csrf_token %}
                                 {% bootstrap_form t.launch_custom_form %}
                                 {% buttons %}
@@ -123,7 +123,7 @@
                             <div class="panel-body">
             <h3>Region selector</h3>
 
-            <form action="{% url "region-select" %}" method="post" class="form">
+            <form action="{% url 'home:region-select' %}" method="post" class="form">
               {% csrf_token %}
               {% bootstrap_form regionform %}
               {% buttons %}
@@ -163,7 +163,7 @@
 
                 <h2>Invite users</h2>
 
-                <form action="{% url "invite" %}" method="post" class="form">
+                <form action="{% url 'user:invite' %}" method="post" class="form">
                   {% csrf_token %}
                   {% bootstrap_form invite %}
                   {% buttons %}

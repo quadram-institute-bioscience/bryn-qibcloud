@@ -15,7 +15,7 @@
     <div class="col-md-6">
       {% bootstrap_messages %}
 
-      <form action="{% url "login" %}" method="post" class="form">
+      <form action="{% url 'user:login' %}" method="post" class="form">
         {% csrf_token %}
         {% bootstrap_form form %}
         {% buttons %}

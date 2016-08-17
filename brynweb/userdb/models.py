@@ -116,7 +116,7 @@ http://bryn.climb.ac.uk%s
 
 Best regards
 
-The CLIMB Project""" % (self.made_by.first_name, self.to_team.name, self.message, reverse('accept-invite', args=[self.uuid,])),
+The CLIMB Project""" % (self.made_by.first_name, self.to_team.name, self.message, reverse('user:accept-invite', args=[self.uuid,])),
                     'noreply@discourse.climb.ac.uk',
                     [self.email], fail_silently=False)
 
@@ -148,7 +148,7 @@ http://bryn.climb.ac.uk%s
 
 Best regards
 
-The CLIMB Project""" % (user.first_name, reverse('validate-email', args=[self.validation_link,])),
+The CLIMB Project""" % (user.first_name, reverse('user:validate-email', args=[self.validation_link,])),
                         'noreply@discourse.climb.ac.uk',
                         [user.email], fail_silently=False)
 

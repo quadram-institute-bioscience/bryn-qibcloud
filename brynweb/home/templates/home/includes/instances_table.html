@@ -28,12 +28,12 @@
           <button class="btn btn-default dropdown-toggle pull-right" type="button" data-toggle="dropdown"><i class="fa fa-reorder"></i> Options</button>
           <ul class="dropdown-menu">
             {% if i.status == 'SHUTOFF' %}
-              <li><a href="#" onclick="ajaxInstanceAction(event, '{% url "start" t.pk i.id %}');"><span class="text-success">Start</span></a></li>
+              <li><a href="#" onclick="ajaxInstanceAction(event, '{% url 'home:start' t.pk i.id %}');"><span class="text-success">Start</span></a></li>
             {% else %}
-              <li><a href="#" onclick="ajaxInstanceAction(event, '{% url "stop" t.pk i.id %}');">Stop</a></li>
-              <li><a href="#" onclick="ajaxInstanceAction(event, '{% url "reboot" t.pk i.id %}');">Reboot</a></li>
+              <li><a href="#" onclick="ajaxInstanceAction(event, '{% url 'home:stop' t.pk i.id %}');">Stop</a></li>
+              <li><a href="#" onclick="ajaxInstanceAction(event, '{% url 'home:reboot' t.pk i.id %}');">Reboot</a></li>
             {% endif %}
-            <li><a href="#" onclick="ajaxInstanceAction(event, '{% url "terminate" t.pk i.id %}');"><span class="text-danger">Terminate</span></a></li>
+            <li><a href="#" onclick="ajaxInstanceAction(event, '{% url 'home:terminate' t.pk i.id %}');"><span class="text-danger">Terminate</span></a></li>
           </ul>
         </div>
       </td>
