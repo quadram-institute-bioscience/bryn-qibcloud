@@ -8,6 +8,7 @@ import uuid
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 
+
 class Region(Model):
     name = CharField(max_length=40)
     description = CharField(max_length=40)
@@ -16,27 +17,40 @@ class Region(Model):
     def __str__(self):
         return self.name
 
+
 class Institution(Model):
     name = CharField(max_length=100)
 
-class Team(Model):
-    name = CharField(max_length=100, verbose_name="Group or team name", help_text="e.g. Bacterial pathogenomics group")
 
+class Team(Model):
+    name = CharField(max_length=100, verbose_name="Group or team name",
+                     help_text="e.g. Bacterial pathogenomics group")
     creator = ForeignKey(User)
     created_at = DateTimeField(auto_now_add=True)
-
-    position = CharField(max_length=50, verbose_name="Position (e.g. Professor)")
-    department = CharField(max_length=50, verbose_name="Department or Institute")
-    institution = CharField(max_length=100, verbose_name="Institution (e.g. University of St. Elsewhere)")
+    position = CharField(
+        max_length=50,
+        verbose_name="Position (e.g. Professor)")
+    department = CharField(
+        max_length=50,
+        verbose_name="Department or Institute")
+    institution = CharField(
+        max_length=100,
+        verbose_name="Institution (e.g. University of St. Elsewhere)")
     phone_number = PhoneNumberField(max_length=20, verbose_name="Phone number")
-    research_interests = TextField(verbose_name="Research interests", help_text="Please supply a brief synopsis of your research programme")
-    intended_climb_use = TextField(verbose_name="Intended use of CLIMB", help_text="Please let us know how you or your group intend to use CLIMB")
-    held_mrc_grants = TextField(verbose_name="Held MRC grants", help_text="If you currently or recent have held grant funding from the Medical Research Council it would be very helpful if you can detail it here to assist with reporting use of CLIMB")
-
+    research_interests = TextField(
+        verbose_name="Research interests",
+        help_text="Please supply a brief synopsis of your research programme")
+    intended_climb_use = TextField(
+        verbose_name="Intended use of CLIMB",
+        help_text="Please let us know how you or your group intend to "
+        "use CLIMB")
+    held_mrc_grants = TextField(
+        verbose_name="Held MRC grants",
+        help_text="If you currently or recent have held grant funding from "
+        "the Medical Research Council it would be very helpful if you can "
+        "detail it here to assist with reporting use of CLIMB")
     verified = BooleanField(default=False)
-
     default_region = ForeignKey(Region)
-
     tenants_available = BooleanField(default=False)
 
     def verify_and_send_notification_email(self):
@@ -73,6 +87,7 @@ The CLIMB Project""" % (self.creator.first_name, self.name),
     def __str__(self):
         return self.name
 
+
 class TeamMember(Model):
     team = ForeignKey(Team)
     user = ForeignKey(User)
@@ -81,9 +96,11 @@ class TeamMember(Model):
     def __str__(self):
         return "%s belongs to %s" % (self.user, self.team)
 
+
 class Invitation(Model):
     uuid = UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    to_team = ForeignKey(Team, on_delete=CASCADE, verbose_name='Team to invite user to')
+    to_team = ForeignKey(Team, on_delete=CASCADE,
+                         verbose_name="Team to invite user to")
     made_by = ForeignKey(User, on_delete=CASCADE)
     email = EmailField()
     message = TextField()
@@ -94,8 +111,6 @@ class Invitation(Model):
         self.made_by = user
         self.accepted = False
         self.save()
-
-        kwargs = {'uuid':self.uuid}
 
         send_mail('Invitation to join a CLIMB group',
                   """Hi there!
@@ -123,9 +138,11 @@ The CLIMB Project""" % (self.made_by.first_name, self.to_team.name, self.message
     def __str__(self):
         return "%s to %s" % (self.email, self.to_team)
 
+
 class UserProfile(Model):
     user = OneToOneField(User, on_delete=CASCADE)
-    validation_link = UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    validation_link = UUIDField(primary_key=True, default=uuid.uuid4,
+                                editable=False)
     email_validated = BooleanField(default=False)
     current_region = ForeignKey(Region)
 

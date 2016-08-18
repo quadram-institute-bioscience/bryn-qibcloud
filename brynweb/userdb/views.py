@@ -40,7 +40,11 @@ def register(request):
             member.is_admin = True
             member.save()
 
-            messages.success(request, 'Thank you for registering. Your request will be approved by an administrator and you will receive an email with further instructions')
+            messages.success(
+                request,
+                "Thank you for registering. Your request will be approved by "
+                "an administrator and you will receive an email with further "
+                "instructions")
 
             return HttpResponseRedirect(reverse('home:home'))
     else:
@@ -49,15 +53,18 @@ def register(request):
 
     return render(request, 'userdb/register.html',
                   {'userform': userform,
-                   'teamform' : teamform})
+                   'teamform': teamform})
+
 
 @login_required
 def invite(request):
     if request.method == 'POST':
         form = InvitationForm(request.user, request.POST)
         if form.is_valid():
-            if Invitation.objects.filter(email=form.cleaned_data['email'], to_team=form.cleaned_data['to_team']):
-                messages.error(request, 'User has already been invited to this team.')
+            if Invitation.objects.filter(email=form.cleaned_data['email'],
+                                         to_team=form.cleaned_data['to_team']):
+                messages.error(request,
+                               "User has already been invited to this team.")
             else:
                 invitation = form.save(commit=False)
                 invitation.send_invitation(request.user)
@@ -66,6 +73,7 @@ def invite(request):
     else:
         messages.error(request, 'No information supplied for invitation')
     return HttpResponseRedirect(reverse('home:home'))
+
 
 def institution_typeahead(request):
     q = request.GET.get('q', '')
@@ -103,27 +111,34 @@ def accept_invite(request, uuid):
             i.accepted = True
             i.save()
 
-            messages.success(request, 'Congratulations you are now a member of %s. Please log-in to get started.' % (member.team))
+            messages.success(
+                request,
+                "Congratulations you are now a member of %s. "
+                "Please log-in to get started." % (member.team))
             return HttpResponseRedirect(reverse('home:home'))
         else:
             messages.error(request, 'Invalid values supplied for form.')
     else:
         i = Invitation.objects.get(uuid=uuid)
         if i.accepted:
-            messages.error(request, 'This invitation has already been claimed!')
+            messages.error(request,
+                           "This invitation has already been claimed!")
             return HttpResponseRedirect(reverse('home:home'))
 
         userform = CustomUserCreationForm()
         userform.initial['email'] = i.email
 
-    return render(request, 'userdb/user-register.html', {'form' : userform})
+    return render(request, 'userdb/user-register.html', {'form': userform})
 
 
 def validate_email(request, uuid):
     profile = get_object_or_404(UserProfile, validation_link=uuid)
     profile.email_validated = True
     profile.save()
-    messages.success(request, 'Thank you for confirming your email address, you can now log-in to get started.')
+    messages.success(
+        request,
+        "Thank you for confirming your email address, "
+        "you can now log-in to get started.")
     return HttpResponseRedirect(reverse('home:home'))
 
 
@@ -153,9 +168,13 @@ def login(request):
                     if user.is_active:
                         auth_login(request, user)
                     else:
-                        messages.error(request, 'Sorry, your account is disabled.')
+                        messages.error(request,
+                                       "Sorry, your account is disabled.")
                 else:
-                    messages.error(request, 'Please validate your email address by following the link sent to your email first.')
+                    messages.error(
+                        request,
+                        "Please validate your email address "
+                        "by following the link sent to your email first.")
 
             return HttpResponseRedirect(redirect_to)
     else:
