@@ -1,12 +1,15 @@
 from __future__ import unicode_literals
 
-from django.db.models import *
-from django.contrib.auth.models import User
-from phonenumber_field.modelfields import PhoneNumberField
 import uuid
 
+from django.db.models import *
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
+
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Region(Model):
@@ -53,33 +56,43 @@ class Team(Model):
     default_region = ForeignKey(Region)
     tenants_available = BooleanField(default=False)
 
+    def new_registration_admin_email(self):
+        if not settings.NEW_REGISTRATION_ADMIN_EMAILS:
+            return
+        context = {'user': self.creator, 'team': self}
+        subject = render_to_string(
+            'userdb/email/new_registration_admin_subject.txt', context)
+        text_content = render_to_string(
+            'userdb/email/new_registration_admin_email.txt', context)
+        html_content = render_to_string(
+            'userdb/email/new_registration_admin_email.html', context)
+
+        send_mail(
+            subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            settings.NEW_REGISTRATION_ADMIN_EMAILS,
+            html_message=html_content,
+            fail_silently=True
+        )
+
     def verify_and_send_notification_email(self):
-        send_mail('CLIMB Team Application approved!',
-                  """Hi %s
+        context = {'user': self.creator, 'team': self}
+        subject = render_to_string(
+            'userdb/email/notify_team_verified_subject.txt', context)
+        text_content = render_to_string(
+            'userdb/email/notify_team_verified_email.txt', context)
+        html_content = render_to_string(
+            'userdb/email/notify_team_verified_email.html', context)
 
-Thank you for applying for a CLIMB group account for:
-
-%s
-
-We are pleased to inform you that your application has been successful!
-Your account is now active and you can sign into your group at:
-
-http://bryn.climb.ac.uk
-
-Upon logging-in you can now begin to invite others to join your group
-and register as new CLIMB users.
-
-Please note that use of this service implies acceptance of the
-CLIMB acceptable use policy that can be viewed at:
-
-https://discourse.climb.ac.uk/t/acceptable-use-and-security-policy/19
-
-Best regards
-
-
-The CLIMB Project""" % (self.creator.first_name, self.name),
-                        'noreply@discourse.climb.ac.uk',
-                        [self.creator.email], fail_silently=False)
+        send_mail(
+            subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.creator.email],
+            html_message=html_content,
+            fail_silently=False
+        )
 
         self.verified = True
         self.save()
@@ -112,28 +125,23 @@ class Invitation(Model):
         self.accepted = False
         self.save()
 
-        send_mail('Invitation to join a CLIMB group',
-                  """Hi there!
+        context = {'invitation': self,
+                   'url': reverse('user:accept-invite', args=[self.uuid])}
+        subject = render_to_string(
+            'userdb/email/user_invite_subject.txt', context)
+        text_content = render_to_string(
+            'userdb/email/user_invite_email.txt', context)
+        html_content = render_to_string(
+            'userdb/email/user_invite_email.html', context)
 
-You have been invited by %s to become a member of the CLIMB team:
-
-%s 
-
-They also sent you a message:
-
-%s
-
-If you wish to become a member of this team and create a CLIMB account
-then please visit the following link:
-
-http://bryn.climb.ac.uk%s
-
-
-Best regards
-
-The CLIMB Project""" % (self.made_by.first_name, self.to_team.name, self.message, reverse('user:accept-invite', args=[self.uuid,])),
-                    'noreply@discourse.climb.ac.uk',
-                    [self.email], fail_silently=False)
+        send_mail(
+            subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [self.email],
+            html_message=html_content,
+            fail_silently=False
+        )
 
     def __str__(self):
         return "%s to %s" % (self.email, self.to_team)
@@ -151,21 +159,21 @@ class UserProfile(Model):
         self.email_validated = False
         self.save()
 
-        send_mail('CLIMB Registration: Please confirm your email address',
-                   """Hi %s!
+        context = {'user': user,
+                   'validation_link': reverse('user:validate-email',
+                                              args=[self.validation_link])}
+        subject = render_to_string(
+            'userdb/email/user_verification_subject.txt', context)
+        text_content = render_to_string(
+            'userdb/email/user_verification_email.txt', context)
+        html_content = render_to_string(
+            'userdb/email/user_verification_email.html', context)
 
-You (or someone pretending to be you) recently signed up for a user
-account on CLIMB:
-
-Before we can go any further, please validate this is a real
-email address by visiting the following link:
-
-http://bryn.climb.ac.uk%s
-
-
-Best regards
-
-The CLIMB Project""" % (user.first_name, reverse('user:validate-email', args=[self.validation_link,])),
-                        'noreply@discourse.climb.ac.uk',
-                        [user.email], fail_silently=False)
-
+        send_mail(
+            subject,
+            text_content,
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+            html_message=html_content,
+            fail_silently=False
+        )

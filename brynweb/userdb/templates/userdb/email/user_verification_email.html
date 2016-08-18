@@ -1,0 +1,18 @@
+{% extends "email/email_base.html" %}
+
+{% block title %}{% include 'userdb/email/user_verification_subject.txt' %}{% endblock %}
+{% block subject %}{% include 'userdb/email/user_verification_subject.txt' %}{% endblock %}
+
+{% block content %}
+  <p>Hi {{ user.first_name }}!</p>
+
+  <p>You (or someone pretending to be you) recently signed up for a user account on CLIMB.</p>
+
+  <p>Before we can go any further, please validate that this is a real email address by visiting the following link:<br>
+  <a href="https://bryn.climb.ac.uk{{ validation_link }}">https://bryn.climb.ac.uk{{ validation_link }}</a></p>
+
+  <p>
+
+  <p>Best regards,<br>
+  <p>The CLIMB Project</p>
+{% endblock %}

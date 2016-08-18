@@ -1,0 +1,13 @@
+{% extends "email/email_base.html" %}
+
+{% block title %}{% include 'userdb/email/new_registration_admin_subject.txt' %}{% endblock %}
+{% block subject %}{% include 'userdb/email/new_registration_admin_subject.txt' %}{% endblock %}
+
+{% block content %}
+<p>User <strong>{{ user.first_name }}</strong> has just completed a new Team registration for <strong>{{ team.name }}</strong></p>
+
+<p>Please verify this request in the <a href="https://bryn.climb.ac.uk/admin">bryn admin</a>.</p>
+
+<p>Best regards,<br>
+BrynBot</p>
+{% endblock %}

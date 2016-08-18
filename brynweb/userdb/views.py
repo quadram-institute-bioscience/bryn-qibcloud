@@ -19,6 +19,7 @@ def register(request):
     if request.method == 'POST':
         userform = CustomUserCreationForm(request.POST)
         teamform = TeamForm(request.POST)
+
         if userform.is_valid() and teamform.is_valid():
             user = userform.save()
 
@@ -45,6 +46,9 @@ def register(request):
                 "Thank you for registering. Your request will be approved by "
                 "an administrator and you will receive an email with further "
                 "instructions")
+
+            # notify admins
+            team.new_registration_admin_email()
 
             return HttpResponseRedirect(reverse('home:home'))
     else:
