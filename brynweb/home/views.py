@@ -21,57 +21,49 @@ from scripts.image_launch import launch_image
 from .utils import messages_to_json
 
 
+@login_required
 def home(request):
-    if not request.user.is_authenticated():
-        form = AuthenticationForm()
-        context = {'form': form}
-        return render(request, 'home/home.html', context)
-    else:
-        region = request.user.userprofile.current_region
+    region = request.user.userprofile.current_region
+    invite = InvitationForm(request.user)
+    teams = Team.objects.filter(teammember__user=request.user)
 
-        invite = InvitationForm(request.user)
+    regionform = RegionSelectForm()
+    regionform.initial['region'] = region
 
-        teams = Team.objects.filter(teammember__user=request.user)
+    for t in teams:
+        if request.user == t.creator:
+            t.is_admin = True
+        t.active = True
 
-        regionform = RegionSelectForm()
-        regionform.initial['region'] = region
+        ## check if region is available
+        if region.disabled:
+            messages.error(request, 'The %s region is currently unavailable. Check the community forum for service status.' % (region.name))
+            t.active = False
+            continue
 
-        for t in teams:
-            if request.user == t.creator:
-                t.is_admin = True
+        tenant = get_tenant_for_team(t, region)
+        if not tenant:
+            t.active = False
+            messages.error(request, 'No tenant registered for this team!')
+            slack_message(
+                'home/slack/no_tenant_for_region.slack',
+                {'team': t, 'region': region, 'user': request.user})
+            continue
 
-            t.active = True
+        if region.name == 'bham':
+            t.horizon_endpoint = 'http://birmingham.climb.ac.uk'
+        elif region.name == 'cardiff':
+            t.horizon_endpoint = 'http://cardiff.climb.ac.uk'
+        elif region.name == 'warwick':
+            t.horizon_endpoint = 'http://stack.warwick.climb.ac.uk'
 
-            ## check if region is available
+        t.launch_form = LaunchServerForm()
+        t.launch_custom_form = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
+        t.tenant_access = tenant
+        t.instances = list_instances(tenant)
 
-            if region.disabled:
-                messages.error(request, 'The %s region is currently unavailable. Check the community forum for service status.' % (region.name))
-                t.active = False
-                continue
-
-            tenant = get_tenant_for_team(t, region)
-            if not tenant:
-                t.active = False
-                messages.error(request, 'No tenant registered for this team!')
-                slack_message(
-                    'home/slack/no_tenant_for_region.slack',
-                    {'team': t, 'region': region, 'user': request.user})
-                continue
-
-            if region.name == 'bham':
-                t.horizon_endpoint = 'http://birmingham.climb.ac.uk'
-            elif region.name == 'cardiff':
-                t.horizon_endpoint = 'http://cardiff.climb.ac.uk'
-            elif region.name == 'warwick':
-                t.horizon_endpoint = 'http://stack.warwick.climb.ac.uk'
-
-            t.launch_form = LaunchServerForm()
-            t.launch_custom_form = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
-            t.tenant_access = tenant
-            t.instances = list_instances(tenant)
-
-        context = {'invite': invite, 'teams': teams, 'regionform' : regionform}
-        return render(request, 'home/dashboard.html', context)
+    context = {'invite': invite, 'teams': teams, 'regionform' : regionform}
+    return render(request, 'home/dashboard.html', context)
 
 
 @login_required
@@ -91,31 +83,6 @@ def get_instances_table(request):
         return HttpResponseBadRequest
 
 
-def loginpage(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.userprofile.email_validated:
-                if user.is_active:
-                    login(request, user)
-                else:
-                    messages.error(request, 'Sorry your account is disabled.')
-            else:
-                messages.error(request, 'Please validate your email address by following the link sent to your email first.')
-        else:
-            messages.error(request, 'Invalid username or password.')
-    else:
-        messages.error(request, 'No authentication data sent.')
-    return HttpResponseRedirect('/')
-
-
-def logoutview(request):
-    logout(request)
-    return HttpResponseRedirect(reverse('home:home'))
-
-
 def validate_and_get_tenant(request, teamid):
     team = get_object_or_404(Team, pk=teamid)
 
@@ -128,6 +95,7 @@ def validate_and_get_tenant(request, teamid):
     region = request.user.userprofile.current_region
     tenant = get_tenant_for_team(team, region)
     return tenant
+
 
 def launch_server(request, launch_type, tenant, server_name, *args, **kwargs):
     log = ActionLog(tenant=tenant)
@@ -145,6 +113,7 @@ def launch_server(request, launch_type, tenant, server_name, *args, **kwargs):
         log.error = False
         log.message = "Server %s launched" % (server_name,)
     log.save()
+
 
 @login_required
 def launch(request, teamid):
@@ -192,6 +161,7 @@ def launchcustom(request, teamid):
         f = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
     return render(request, 'home/launch-image.html', context={'form' : f})
 
+
 @login_required
 def stop(request, teamid, uuid):
     tenant = validate_and_get_tenant(request, teamid)
@@ -204,6 +174,7 @@ def stop(request, teamid, uuid):
         return JsonResponse(messages_to_json(request))
     else:
         return HttpResponseRedirect('/')
+
 
 @login_required
 def start(request, teamid, uuid):
@@ -218,6 +189,7 @@ def start(request, teamid, uuid):
     else:
         return HttpResponseRedirect('/')
 
+
 @login_required
 def reboot(request, teamid, uuid):
     tenant = validate_and_get_tenant(request, teamid)
@@ -231,6 +203,7 @@ def reboot(request, teamid, uuid):
     else:
         return HttpResponseRedirect('/')
 
+
 @login_required
 def terminate(request, teamid, uuid): 
     tenant = validate_and_get_tenant(request, teamid)
@@ -243,6 +216,7 @@ def terminate(request, teamid, uuid):
         return JsonResponse(messages_to_json(request))
     else:
         return HttpResponseRedirect('/')
+
 
 @login_required
 def region_select(request):

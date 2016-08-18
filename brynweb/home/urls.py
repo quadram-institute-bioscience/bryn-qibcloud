@@ -3,8 +3,6 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^login$', views.loginpage, name='login'),
-    url(r'^logout$', views.logoutview, name='logout'),
     url(r'^status$', views.status, name='status'),
     url(r'^region-select$', views.region_select, name='region-select'),
     url(r'^launch/(?P<teamid>\d+)$', views.launch, name='launch'),

@@ -1,11 +1,18 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.contrib.auth import (
+    REDIRECT_FIELD_NAME, authenticate, login as auth_login)
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.sites.shortcuts import get_current_site
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import render, get_object_or_404, resolve_url
+from django.template.response import TemplateResponse
+from django.utils.http import is_safe_url
 
 from .forms import CustomUserCreationForm, TeamForm, InvitationForm
-from .models import Institution, Team, TeamMember, Invitation, UserProfile, Region
+from .models import Institution, TeamMember, Invitation, UserProfile, Region
 
 
 def register(request):
@@ -119,3 +126,48 @@ def validate_email(request, uuid):
     messages.success(request, 'Thank you for confirming your email address, you can now log-in to get started.')
     return HttpResponseRedirect(reverse('home:home'))
 
+
+def login(request):
+    """
+    Copied from django source, but modified to reject where email not verified
+    Displays the login form and handles the login action.
+    """
+    redirect_to = request.POST.get(REDIRECT_FIELD_NAME,
+                                   request.GET.get(REDIRECT_FIELD_NAME, ''))
+
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+
+            # Ensure the user-originating redirection url is safe.
+            if not is_safe_url(url=redirect_to, host=request.get_host()):
+                redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
+
+            print("Redirect to " + redirect_to)
+
+            # Okay, security check complete. Log the user in.
+            user = authenticate(username=form.cleaned_data['username'],
+                                password=form.cleaned_data['password'])
+            if user:
+                if user.userprofile.email_validated:
+                    if user.is_active:
+                        auth_login(request, user)
+                    else:
+                        messages.error(request, 'Sorry, your account is disabled.')
+                else:
+                    messages.error(request, 'Please validate your email address by following the link sent to your email first.')
+
+            return HttpResponseRedirect(redirect_to)
+    else:
+        form = AuthenticationForm(request)
+
+    current_site = get_current_site(request)
+
+    context = {
+        'form': form,
+        REDIRECT_FIELD_NAME: redirect_to,
+        'site': current_site,
+        'site_name': current_site.name,
+    }
+
+    return TemplateResponse(request, 'userdb/login.html', context)
