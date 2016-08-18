@@ -44,7 +44,6 @@ def home(request):
         tenant = get_tenant_for_team(t, region)
         if not tenant:
             t.active = False
-            messages.error(request, 'No tenant registered for this team!')
             slack_message(
                 'home/slack/no_tenant_for_region.slack',
                 {'team': t, 'region': region, 'user': request.user})
@@ -62,7 +61,12 @@ def home(request):
         t.tenant_access = tenant
         t.instances = list_instances(tenant)
 
-    context = {'invite': invite, 'teams': teams, 'regionform' : regionform}
+    context = {
+        'invite': invite,
+        'teams': teams,
+        'region': region,
+        'regionform': regionform
+    }
     return render(request, 'home/dashboard.html', context)
 
 
