@@ -12,7 +12,8 @@ from django.template.response import TemplateResponse
 from django.utils.http import is_safe_url
 
 from .forms import CustomUserCreationForm, TeamForm, InvitationForm
-from .models import Institution, TeamMember, Invitation, UserProfile, Region
+from .models import (Institution, Team, TeamMember, Invitation, UserProfile,
+                     Region)
 
 
 def register(request):
@@ -167,20 +168,29 @@ def login(request):
             # Okay, security check complete. Log the user in.
             user = authenticate(username=form.cleaned_data['username'],
                                 password=form.cleaned_data['password'])
+
             if user:
-                if user.userprofile.email_validated:
-                    if user.is_active:
-                        auth_login(request, user)
-                    else:
-                        messages.error(request,
-                                       "Sorry, your account is disabled.")
-                else:
+                teams = Team.objects.filter(teammember__user=user)
+                if not user.userprofile.email_validated:
                     messages.error(
                         request,
                         "Please validate your email address "
                         "by following the link sent to your email first.")
+                elif not user.is_active:
+                    messages.error(
+                        request,
+                        "Sorry, your account is disabled.")
+                elif not any(team.verified for team in teams):
+                    messages.error(
+                        request,
+                        "Your team hasn't been verified yet. Please "
+                        "check back later.")
+                else:
+                    # All conditions met, login
+                    auth_login(request, user)
+                    return HttpResponseRedirect(redirect_to)
 
-            return HttpResponseRedirect(redirect_to)
+            return HttpResponseRedirect(reverse('user:login'))
     else:
         form = AuthenticationForm(request)
 
