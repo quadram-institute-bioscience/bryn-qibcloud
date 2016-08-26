@@ -22,153 +22,59 @@
         {% bootstrap_messages %}
 
         {% if teams|length > 1 %}
-        {% for t in teams %}
-          <ul class="nav nav-tabs">
-            <li class="{% if forloop.counter == 1 %}active{% endif %}"><a data-toggle="tab" href="#home">{{ t }}</a></li>
-          </ul>
-        {% endfor %}
+          {% for t in teams %}
+            <ul class="nav nav-tabs">
+              <li class="{% if forloop.counter == 1 %}active{% endif %}"><a data-toggle="tab" href="#home">{{ t }}</a></li>
+            </ul>
+          {% endfor %}
         {% endif %}
       </div>
     </div>
 
     <div class="tab-content">
       {% for t in teams %}
+
         <div id="home" class="tab-pane fade in {% if forloop.counter == 1 %}active{% endif %}">
+          <div class="row team-container">
+            <div class="col-md-12">
+              <h2>{{ t }}</h2>
 
-          {% if not t.verified %}
-            <p>Your team details are currently being validated by our administration team. Please check back later to launch servers!</p>
-          {% else %}
-
-            <div class="row team-container">
-              <div class="col-md-12">
-                <h2>{{ t }}</h2>
-
-                <h3>Running servers</h3>
+              {% if not t.verified %}
+                <p>Your team details are currently being validated by our administration team. Please check back later to launch servers!</p>
+              {% elif t.tenant_access %}
+                <h3>Running servers at {{ region|title }}</h3>
                 <div class="instances-table-container" data-team-id="{{ t.id }}">
                   {% include "home/includes/instances_table.html" %}
                 </div>
-
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="panel-group" id="accordion">
-                        {% if t.active %}
-                        <div class="panel panel-info">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#launch-gvl{{ forloop.counter }}">
-                              Launch a Genomics Virtual Laboratory server</a>
-                            </h4>
-                          </div>
-                          <div id="launch-gvl{{ forloop.counter }}" class="panel-collapse collapse">
-                            <div class="panel-body">
-                              <form action="{% url "launch" t.pk %}" method="post" class="form launch-gvl-form">
-                                {% csrf_token %}
-                                {% bootstrap_form t.launch_form %}
-                                {% buttons %}
-                                  <button type="submit" class="btn btn-success">
-                                    <i class="fa fa-server"></i> Launch Server
-                                  </button>
-                                {% endbuttons %}
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="panel panel-info">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#launch-custom{{ forloop.counter }}">
-                              Launch a custom server</a>
-                            </h4>
-                          </div>
-                          <div id="launch-custom{{ forloop.counter }}" class="panel-collapse collapse">
-                            <div class="panel-body">
-                              <form action="{% url 'launchcustom' teamid=t.id %}" method="post" class="form launch-custom-form">
-                                {% csrf_token %}
-                                {% bootstrap_form t.launch_custom_form %}
-                                {% buttons %}
-                                  <button type="submit" class="btn btn-success">
-                                    <i class="fa fa-server"></i> Launch Server
-                                  </button>
-                                {% endbuttons %}
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="panel panel-info">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#advanced-interface{{ forloop.counter }}">
-                              Advanced interface</a>
-                            </h4>
-                          </div>
-                          <div id="advanced-interface{{ forloop.counter }}" class="panel-collapse collapse">
-                            <div class="panel-body">
-                              <p>For advanced options, please login to <a href="{{ t.horizon_endpoint }}">Horizon</a> with:</p>
-                              <dl>
-                                <dt>username</dt><dd><font face="Courier">{{ t.tenant_access.get_auth_username }}</font></dd>
-                                <dt>password</dt><dd><font face="Courier">{{ t.tenant_access.auth_password }}</font></dd>
-                              </dl>
-                            </div>
-                          </div>
-                        </div>
-                        {% endif %}
-                        <div class="panel panel-info">
-                          <div class="panel-heading">
-                            <h4 class="panel-title">
-                              <a data-toggle="collapse" data-parent="#accordion" href="#region-change{{ forloop.counter }}">
-                              Change region</a>
-                            </h4>
-                          </div>
-                          <div id="region-change{{ forloop.counter }}" class="panel-collapse collapse">
-                            <div class="panel-body">
-            <h3>Region selector</h3>
-
-            <form action="{% url "region-select" %}" method="post" class="form">
-              {% csrf_token %}
-              {% bootstrap_form regionform %}
-              {% buttons %}
-                <button type="submit" class="btn btn-primary">
-                  {% bootstrap_icon "star" %} Change Region
-                </button>
-              {% endbuttons %}
-            </form>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="col-md-6">
-                      <div class="messages-container"></div>
-                    </div>
-
+                <div class="row">
+                  <div class="col-md-6">
+                    {% include "home/includes/dashboard_actions.html" %}
                   </div>
-                  
-                {% if not t.tenants_available %}
-                  <p>Please check back tomorrow for the ability to launch your own virtual machines in the cloud. In the meantime you might like to browse <a href="http://discourse.climb.ac.uk">the CLIMB discussion forum</a>.</p>
-                {% endif %}
-              </div>
-          {% endif %}
-            
-
-          {% if t.verified and not t.tenants_available %}
-            <p>Please check back tomorrow for the ability to launch your own virtual machines in the cloud. In the meantime you might like to browse <a href="http://discourse.climb.ac.uk">the CLIMB discussion forum</a>.</p>
->>>>>>> Stashed changes
-          {% endif %}
+                  <div class="col-md-6">
+                    <div class="messages-container"></div>
+                  </div>
+                </div>
+              {% else %}
+                <div class="col-md-6">
+                  <p class="text-danger"><i class="fa fa-warning"></i> Your team doesn't currently have a tenant registered for this region ({{ region|title }}).</p>
+                  {% include "home/includes/region_selector.html" %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
 
           {% if t.verified and t.is_admin %}
             <div class="row">
               <div class="col-md-6">
+                <h2>Invite users</h2>
                 <p>As group leader, you can invite new users to join your group using this invitation form:</p>
 
-                <h2>Invite users</h2>
-
-                <form action="{% url "invite" %}" method="post" class="form">
+                <form action="{% url 'user:invite' %}" method="post" class="form">
                   {% csrf_token %}
                   {% bootstrap_form invite %}
                   {% buttons %}
                     <button type="submit" class="btn btn-primary">
-                      {% bootstrap_icon "star" %} Invite User
+                      <i class="fa fa-envelope"></i> Invite User
                     </button>
                   {% endbuttons %}
                 </form>

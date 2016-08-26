@@ -1,0 +1,22 @@
+{% extends "email/email_base.html" %}
+
+{% block title %}{% include 'userdb/email/notify_team_verified_subject.txt' %}{% endblock %}
+{% block subject %}{% include 'userdb/email/notify_team_verified_subject.txt' %}{% endblock %}
+
+{% block content %}
+<p>Hi {{ user.first_name }},</p>
+
+<p>Thank you for applying for a CLIMB group account for: <strong>{{ team.name }}</strong></p>
+
+<p>We are pleased to inform you that your application has been successful!</p>
+
+<p>Your account is now active and you can sign into your group at: <a href="https://bryn.climb.ac.uk">https://bryn.climb.ac.uk</a></p>
+
+<p>Upon logging-in you can now begin to invite others to join your group and register as new CLIMB users.</p>
+
+<p>Please note that use of this service implies acceptance of the CLIMB acceptable use policy that can be viewed at: 
+<a href="https://discourse.climb.ac.uk/t/acceptable-use-and-security-policy/19">https://discourse.climb.ac.uk/t/acceptable-use-and-security-policy/19</a></p>
+
+<p>Best regards,<br>
+The CLIMB Project</p>
+{% endblock %}

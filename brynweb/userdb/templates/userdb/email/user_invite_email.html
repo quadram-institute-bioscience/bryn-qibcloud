@@ -1,0 +1,22 @@
+{% extends "email/email_base.html" %}
+
+{% block title %}{% include 'userdb/email/user_invite_subject.txt' %}{% endblock %}
+{% block subject %}{% include 'userdb/email/user_invite_subject.txt' %}{% endblock %}
+
+{% block content %}
+  <p>Hi there!</p>
+
+  <p>You have been invited by {{ invitation.made_by.first_name }} to become a member of the CLIMB team:<br>
+  <strong>{{ invitation.to_team.name }}</strong></p>
+
+  {% if invitation.message %}
+    <p>They also sent you a message:<br>
+    <strong>{{ invitation.message }}</strong></p>
+  {% endif %}
+
+  <p>If you wish to become a member of this team and create a CLIMB account then please visit the following link:<br>
+  <a href="https://bryn.climb.ac.uk{{ url }}">https://bryn.climb.ac.uk{{ url }}</a></p>
+
+  <p>Best regards,<br>
+  <p>The CLIMB Project</p>
+{% endblock %}

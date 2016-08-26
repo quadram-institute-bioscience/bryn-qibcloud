@@ -3,13 +3,9 @@ Django settings for brynweb project.
 """
 
 import os
-from locals import *
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -18,6 +14,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 ADMINS = [('Nick', 'n.j.loman.bham.ac.uk')]
 SERVER_EMAIL = 'noreply@discourse.climb.ac.uk'
+DEFAULT_FROM_EMAIL = 'noreply@discourse.climb.ac.uk'
 
 # Application definition
 
@@ -101,6 +98,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Login settings
+
+LOGIN_URL = 'user:login'
+LOGIN_REDIRECT_URL = 'home:home'
 
 
 # Internationalization
@@ -250,3 +252,11 @@ LOGGING = {
         'handlers': ['console', 'logfile']
     },
 }
+
+SLACK_FAIL_SILENTLY = True
+#SLACK_BACKEND = 'django_slack.backends.UrllibBackend'
+
+try:
+    from .locals import *
+except ImportError:
+    pass

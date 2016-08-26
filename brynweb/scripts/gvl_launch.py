@@ -141,7 +141,7 @@ cluster_templates:
            block_device_mapping_v2=bdm)
     print server
 
-    time.sleep(1)
+    time.sleep(3)
 
     add_floating_ip(nova, tenant, server)
 

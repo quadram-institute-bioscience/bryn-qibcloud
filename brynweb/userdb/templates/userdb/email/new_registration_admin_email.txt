@@ -1,0 +1,6 @@
+User {{ user.first_name }} has just completed a new Team registration for {{ team.name }}
+
+Please verify this request in the bryn admin.
+
+Best regards,
+BrynBot
