@@ -103,6 +103,14 @@ def validate_and_get_tenant(request, teamid):
 
 def launch_server(request, launch_type, tenant, server_name, *args, **kwargs):
     log = ActionLog(tenant=tenant)
+
+    if tenant.region.disable_new_instances:
+        messages.error(
+            request,
+            'Launching new instances is temporarily disabled for this region (%s)'
+            % tenant.region.name)
+        return
+
     try:
         if launch_type == 'gvl':
             launch_gvl(tenant, server_name, *args, **kwargs)
