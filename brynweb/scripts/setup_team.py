@@ -94,9 +94,7 @@ def setup_tenant(team, region):
     nova.security_group_rules.create(group.id, ip_protocol="tcp",
                                      from_port=443, to_port=443) 
 
-
-    if region.name == 'bham' or \
-       region.name == 'cardiff':
+    if region.regionsettings.requires_network_setup:
         tenant.created_network_id = setup_network(client, region, tenant.created_tenant_id)
 
     set_quota(tenant)
