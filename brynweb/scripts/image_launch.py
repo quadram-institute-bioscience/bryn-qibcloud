@@ -47,9 +47,8 @@ def launch_image(tenant, server_name, image_id, auth_key_name, auth_key_value, s
            key_name=key_name,
            block_device_mapping_v2=bdm)
 
-    time.sleep(3)
-
-    add_floating_ip(nova, tenant, server)
+    #time.sleep(3)
+    #add_floating_ip(nova, tenant, server)
 
     return True
 

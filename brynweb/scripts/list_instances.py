@@ -11,15 +11,16 @@ def list_instances(tenant):
                              username=tenant.get_auth_username(),
                              password=tenant.auth_password,
                              project_name=tenant.get_tenant_name())
-
     nova = client.get_nova()
-
     servers = []
-    for s in nova.servers.list(detailed=True): 
+
+    for s in nova.servers.list(detailed=True):
         ip = 'unknown'
-        try:
-            ip = s.addresses['public'][0]['addr']
-        except:
+        netname = tenant.region.regionsettings.public_network_name
+        if netname in s.addresses:
+            ip = s.addresses[netname][0]['addr']
+        else:
+            # Floating ips: remove once Cardiff has flat network
             block = None
             if 'tenant1-private' in s.addresses:
                 block = s.addresses['tenant1-private']
