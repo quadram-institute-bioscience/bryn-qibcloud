@@ -116,7 +116,7 @@ def validate_and_get_tenant(request, teamid):
 
 
 def launch_server(request, launch_type, tenant, server_name, *args, **kwargs):
-    log = ActionLog(tenant=tenant)
+    log = ActionLog(tenant=tenant, user=request.user)
 
     if tenant.region.disable_new_instances:
         messages.error(
@@ -137,7 +137,13 @@ def launch_server(request, launch_type, tenant, server_name, *args, **kwargs):
     else:
         messages.success(request, 'Successfully launched server!')
         log.error = False
-        log.message = "Server %s launched" % (server_name,)
+        log.message = (
+            "Name: {server_name}, Flavour: {flavour}, Image: {image}".format(
+                server_name=server_name,
+                flavour=args[3],
+                image=dict(tenant.get_images())[args[0]]
+            )
+        )
     log.save()
 
 
