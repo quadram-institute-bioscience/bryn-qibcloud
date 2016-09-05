@@ -6,8 +6,10 @@ $(function() {
   });
 
   // Custom launch form toggle ssh key fields
-  $('#id_server_key_name').closest('.form-group').hide();
-  $('#id_server_key').closest('.form-group').hide();
+  if ($('#id_server_key_name_choice').val() != 'bryn:new') {
+    $('#id_server_key_name').closest('.form-group').hide();
+    $('#id_server_key').closest('.form-group').hide();
+  }
 
   $('#id_server_key_name_choice').change(function() {
     var key_name = $('#id_server_key_name').closest('.form-group');
