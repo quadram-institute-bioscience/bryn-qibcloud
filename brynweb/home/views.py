@@ -128,8 +128,21 @@ def launch_server(request, launch_type, tenant, server_name, *args, **kwargs):
     try:
         if launch_type == 'gvl':
             launch_gvl(tenant, server_name, *args, **kwargs)
+            log.message = (
+                "Name: {server_name}, Flavour: {flavour}, Image: GVL".format(
+                    server_name=server_name,
+                    flavour=args[1]
+                )
+            )
         elif launch_type == 'image':
             launch_image(tenant, server_name, *args, **kwargs)
+            log.message = (
+                "Name: {server_name}, Flavour: {flavour}, Image: {image}".format(
+                    server_name=server_name,
+                    flavour=args[3],
+                    image=dict(tenant.get_images())[args[0]]
+                )
+            )
     except Exception, e:
         messages.error(request, 'Error launching: %s' % (e,))
         log.error = True
@@ -137,13 +150,6 @@ def launch_server(request, launch_type, tenant, server_name, *args, **kwargs):
     else:
         messages.success(request, 'Successfully launched server!')
         log.error = False
-        log.message = (
-            "Name: {server_name}, Flavour: {flavour}, Image: {image}".format(
-                server_name=server_name,
-                flavour=args[3],
-                image=dict(tenant.get_images())[args[0]]
-            )
-        )
     log.save()
 
 
