@@ -56,10 +56,24 @@ def home(request):
         elif region.name == 'warwick':
             t.horizon_endpoint = 'http://stack.warwick.climb.ac.uk'
 
-        t.launch_form = LaunchServerForm()
-        t.launch_custom_form = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
-        t.tenant_access = tenant
-        t.instances = list_instances(tenant)
+        try:
+            t.launch_form = LaunchServerForm()
+            t.launch_custom_form = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
+            t.tenant_access = tenant
+            t.instances = list_instances(tenant)
+        except Exception, e:
+            messages.error(
+                request,
+                'The %s region is currently unavailable. Check the community '
+                'forum for service status.' % (region.name))
+            slack_message(
+                'home/slack/region_api_exception.slack',
+                {
+                    'team': t,
+                    'region': region,
+                    'user': request.user,
+                    'e': e
+                })
 
     context = {
         'invite': invite,
