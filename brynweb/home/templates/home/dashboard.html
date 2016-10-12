@@ -22,11 +22,11 @@
         {% bootstrap_messages %}
 
         {% if teams|length > 1 %}
+          <ul class="nav nav-tabs">
           {% for t in teams %}
-            <ul class="nav nav-tabs">
-              <li class="{% if forloop.counter == 1 %}active{% endif %}"><a data-toggle="tab" href="#home">{{ t }}</a></li>
-            </ul>
+            <li class="{% if forloop.counter == 1 %}active{% endif %}"><a data-toggle="tab" href="#team-{{ t.id }}">{{ t }}</a></li>
           {% endfor %}
+          </ul>
         {% endif %}
       </div>
     </div>
@@ -34,7 +34,7 @@
     <div class="tab-content">
       {% for t in teams %}
 
-        <div id="home" class="tab-pane fade in {% if forloop.counter == 1 %}active{% endif %}">
+        <div id="team-{{ t.id }}" class="team-container tab-pane fade in {% if forloop.counter == 1 %}active{% endif %}">
           <div class="row team-container">
             <div class="col-md-12">
               <h2>{{ t }}</h2>
