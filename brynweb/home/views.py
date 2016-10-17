@@ -31,7 +31,8 @@ def home(request):
     regionform.initial['region'] = region
 
     for t in teams:
-        if request.user == t.creator:
+        team_member = TeamMember.objects.get(team=t, user=request.user)
+        if request.user == t.creator or team_member.is_admin:
             t.is_admin = True
         t.active = True
 
