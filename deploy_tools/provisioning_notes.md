@@ -1,6 +1,8 @@
 # Bryn server provisioning notes
 Any templates referred to can be found in the deploy_tools/config_templates directory of the repo.
 
+Make sure 443 is open in security group for new server.
+
 ### Required packages:
 
 * nginx
@@ -22,6 +24,7 @@ Any templates referred to can be found in the deploy_tools/config_templates dire
 * Copy `ssl-params.conf` template to `/etc/nginx/snippets`
 * Copy `bryn.climb.ac.uk` template to `/etc/nginx/sites-available`
 * `ln -s /etc/nginx/sites-available/bryn.climb.ac.uk /etc/nginx/sites-enabled/bryn.climb.ac.uk`
+* disable default site `rm /etc/nginx/sites-enabled/default`
 * `mkdir /tmp/letsencrypt`
 * `cd /etc/ssl/certs`
 * `openssl dhparam -out dhparam.pem 4096`
