@@ -3,7 +3,7 @@ import random
 from fabric.contrib.files import append, exists, sed
 from fabric.api import env, local, run, put
 
-REPO_URL = 'https://github.com/MRC-CLIMB/bryn/tree/master/brynweb'
+REPO_URL = 'https://github.com/MRC-CLIMB/bryn'
 
 
 def deploy():
@@ -22,7 +22,7 @@ def deploy():
 
 
 def _create_directory_structure(site_folder):
-    for subfolder in ('database', 'static', 'venv'):
+    for subfolder in ('static', 'venv'):
         run('mkdir -p %s/%s' % (site_folder, subfolder))
 
 
@@ -62,6 +62,8 @@ def _update_virtualenv(site_folder):
 def _copy_local_settings(local_source_folder, source_folder):
     put(local_source_folder + '/brynweb/locals.py',
         source_folder + '/brynweb/locals.py')
+    put(local_source_folder + '/openstack/auth_settings.py',
+        source_folder + '/openstack/auth_settings.py')
 
 
 def _update_static_files(source_folder):
