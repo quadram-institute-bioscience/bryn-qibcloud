@@ -59,12 +59,12 @@ cluster_templates:
       type: transient
       roles: galaxyTools,galaxyData
       data_source: archive
-      archive_url: http://s3.climb.ac.uk/gvl/microgvl-fs-0.11-1-beta.tgz
+      archive_url: http://131.251.130.136/public/researcher/microgvl-fs-0.11-1-beta.tgz
       archive_md5: b116da95872802dfab5a22d8caec0f4a
     - name: gvl
       type: transient
       data_source: archive
-      archive_url: http://s3.climb.ac.uk/gvl/microgvl-apps-0.11-1-beta-rebuilt.tgz
+      archive_url: http://131.251.130.136/public/researcher/microgvl-apps-0.11-1-beta-rebuilt.tgz
       archive_md5: 5c039ffacfe96e875c82c4bc8eb10df1
     - name: galaxyIndices
       type: transient
