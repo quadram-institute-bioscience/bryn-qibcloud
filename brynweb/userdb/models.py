@@ -16,6 +16,7 @@ class Region(Model):
     name = CharField(max_length=40)
     description = CharField(max_length=40)
     disabled = BooleanField(default=False)
+    disable_new_instances = BooleanField(default=False)
 
     def __str__(self):
         return self.name

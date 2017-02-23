@@ -32,7 +32,8 @@ def home(request):
     regionform.initial['region'] = region
 
     for t in teams:
-        if request.user == t.creator:
+        team_member = TeamMember.objects.get(team=t, user=request.user)
+        if request.user == t.creator or team_member.is_admin:
             t.is_admin = True
         t.active = True
 
@@ -57,11 +58,25 @@ def home(request):
         elif region.name == 'warwick':
             t.horizon_endpoint = 'http://stack.warwick.climb.ac.uk'
 
-        t.launch_form = LaunchServerForm()
-        t.launch_custom_form = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
-        t.tenant_access = tenant
-        t.instances = list_instances(tenant)
-        t.volumes = list_volumes(tenant, t.instances)
+        try:
+            t.launch_form = LaunchServerForm()
+            t.launch_custom_form = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
+            t.tenant_access = tenant
+            t.instances = list_instances(tenant)
+            t.volumes = list_volumes(tenant, t.instances)
+        except Exception, e:
+            messages.error(
+                request,
+                'The %s region is currently unavailable. Check the community '
+                'forum for service status.' % (region.name))
+            slack_message(
+                'home/slack/region_api_exception.slack',
+                {
+                    'team': t,
+                    'region': region,
+                    'user': request.user,
+                    'e': e
+                })
 
     context = {
         'invite': invite,
@@ -104,12 +119,33 @@ def validate_and_get_tenant(request, teamid):
 
 
 def launch_server(request, launch_type, tenant, server_name, *args, **kwargs):
-    log = ActionLog(tenant=tenant)
+    log = ActionLog(tenant=tenant, user=request.user)
+
+    if tenant.region.disable_new_instances:
+        messages.error(
+            request,
+            'Launching new instances is temporarily disabled for this region (%s)'
+            % tenant.region.name)
+        return
+
     try:
         if launch_type == 'gvl':
             launch_gvl(tenant, server_name, *args, **kwargs)
+            log.message = (
+                "Name: {server_name}, Flavour: {flavour}, Image: GVL".format(
+                    server_name=server_name,
+                    flavour=args[1]
+                )
+            )
         elif launch_type == 'image':
             launch_image(tenant, server_name, *args, **kwargs)
+            log.message = (
+                "Name: {server_name}, Flavour: {flavour}, Image: {image}".format(
+                    server_name=server_name,
+                    flavour=args[3],
+                    image=dict(tenant.get_images())[args[0]]
+                )
+            )
     except Exception, e:
         messages.error(request, 'Error launching: %s' % (e,))
         log.error = True
@@ -117,7 +153,6 @@ def launch_server(request, launch_type, tenant, server_name, *args, **kwargs):
     else:
         messages.success(request, 'Successfully launched server!')
         log.error = False
-        log.message = "Server %s launched" % (server_name,)
     log.save()
 
 

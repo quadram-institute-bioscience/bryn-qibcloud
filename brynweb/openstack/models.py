@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db.models import *
+from django.contrib.auth.models import User
 from userdb.models import Team, Region
 from openstack.client import OpenstackClient
 from django_slack import slack_message
@@ -73,6 +74,7 @@ class Tenant(Model):
 
 class ActionLog(Model):
     tenant = ForeignKey(Tenant)
+    user = ForeignKey(User, default=None, null=True)
     date = DateTimeField(auto_now_add=True)
     message = TextField()
     error = BooleanField()
@@ -111,6 +113,7 @@ class HypervisorStats(Model):
 class RegionSettings(Model):
     region = OneToOneField(Region)
     gvl_image_id = CharField(max_length=50)
+    public_network_name = CharField(max_length=50)
     public_network_id = CharField(max_length=50)
     requires_network_setup = BooleanField(default=False)
     floating_ip_pool = CharField(max_length=50, blank=True)

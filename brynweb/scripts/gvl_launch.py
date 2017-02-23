@@ -16,11 +16,13 @@ def launch_gvl(tenant, server_name, password, server_type='group'):
 
     nova = client.get_nova()
 
+    key_name = add_keypair(nova, 'cloudman', """ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDHJwmiJh8wKtl9zYty/eN6+zmBUrObDfdk4HfvWYU/+G8sGrjzd8IBikEDWXMTfp40ZG8OsHacTxBODzPWFAGl5TE5FT89OQ7rbQa1nsYsZqBsy+k0IaVU0EzNQUvkWrLD2SO2hYV9NzwByjLZ3cIl2lndpd7xTlOTLef8RbmPkks9nIW5DDvtG5Ac/bh8e5gJaTvNfNHO2KAoNlYkCya1FS2WqnuQ1CzdEiQb4VWUdW7ix8obs4v42W38HnTN4CjlkCcAdGyaeAQlogxed3/S++nlYn/Memedx+cIzDqyf8+2N7RFMgU3j91nVXy2CPMRJlhkGjxmpS2CthUVew1d cloudman@cloudman""")
+
     #server_name = "%s-%s" % (tenant.team.name, server_type)
 
     user_specific_data = {'cloud_name'   : 'CLIMB',
                           'cluster_name' : server_name,
-                          #'key_name'     : key_name,
+                          'key_name'     : key_name,
                           'password'     : password,
                           'freenxpass'   : password}
 
@@ -57,12 +59,12 @@ cluster_templates:
       type: transient
       roles: galaxyTools,galaxyData
       data_source: archive
-      archive_url: http://s3.climb.ac.uk/gvl/microgvl-fs-0.11-1-beta.tgz
+      archive_url: http://131.251.130.136/public/researcher/microgvl-fs-0.11-1-beta.tgz
       archive_md5: b116da95872802dfab5a22d8caec0f4a
     - name: gvl
       type: transient
       data_source: archive
-      archive_url: http://s3.climb.ac.uk/gvl/microgvl-apps-0.11-1-beta-rebuilt.tgz
+      archive_url: http://131.251.130.136/public/researcher/microgvl-apps-0.11-1-beta-rebuilt.tgz
       archive_md5: 5c039ffacfe96e875c82c4bc8eb10df1
     - name: galaxyIndices
       type: transient
@@ -137,13 +139,12 @@ cluster_templates:
            flavor=fl,
            nics=[{'net-id' : tenant.get_network_id()}],
            userdata=userdata,
-           #key_name=key_name,
+           key_name=key_name,
            block_device_mapping_v2=bdm)
     print server
 
-    time.sleep(3)
-
-    add_floating_ip(nova, tenant, server)
+    #time.sleep(3)
+    #add_floating_ip(nova, tenant, server)
 
     return True
 

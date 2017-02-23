@@ -1,0 +1,12 @@
+[Unit]
+Description=Gunicorn server for bryn.climb.ac.uk
+After=network.target
+
+[Service]
+User=ubuntu
+ExecStart=/home/ubuntu/sites/bryn.climb.ac.uk/venv/bin/gunicorn --bind unix:/tmp/bryn.climb.ac.uk.socket --workers 4 --timeout 60 --error-logfile /var/log/gunicorn/bryn.climb.ac.uk-error.log brynweb.wsgi:application
+ExecStop=/bin/true
+WorkingDirectory=/home/ubuntu/sites/bryn.climb.ac.uk/brynweb
+
+[Install]
+WantedBy=multi-user.target

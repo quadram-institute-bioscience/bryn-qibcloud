@@ -1,5 +1,5 @@
 {% extends django_slack %}
 
 {% block text %}
-Yay! Someone successfully launched a server in {{ log.tenant }} : {{ log.message }}
+Yay! {{ log.user.first_name }} {{ log.user.last_name }} ({{ log.tenant }}) launched a new server: {{ log.message }}
 {% endblock %}

@@ -160,7 +160,14 @@ PIPELINE = {
                 'js/brynweb.js',
             ),
             'output_filename': 'js/brynweb.min.js'
-        }
+        },
+        'home_dashboard': {
+            'source_filenames': (
+                'home/js/ajax-forms.js',
+                'home/js/dashboard.js',
+            ),
+            'output_filename': 'home/js/dashboard.min.js'
+        },
     }
 }
 
