@@ -7,7 +7,7 @@ virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-## Deploying updates
+### Deploying updates
 
 * Commit and push changes to repo
 * ensure local settings files are present
