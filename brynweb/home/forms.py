@@ -26,8 +26,10 @@ class LaunchServerForm(forms.Form):
     password = forms.CharField(
         label="New server password",
         widget=forms.widgets.PasswordInput,
-        required=True)
-
+        required=True,
+        validators=[RegexValidator(
+          regex='^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{8,}$',
+          message="Weak password! At least one CAPITAL letter and one number required, minimum 8 characters.")])
 
 class LaunchImageServerForm(forms.Form):
     server_name = forms.CharField(
