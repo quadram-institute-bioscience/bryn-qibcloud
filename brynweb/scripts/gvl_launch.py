@@ -41,10 +41,7 @@ def launch_gvl(tenant, server_name, password, server_type='group'):
 
     generic_data = """cloud_type: openstack
 region_name: nova
-s3_conn_path: /
-s3_host: swift.rc.nectar.org.au
-s3_port: 8888
-bucket_default: cloudman-gvl-410
+default_bucket_url: https://gvl-filesystem.s3.climb.ac.uk/
 use_object_store: false
 initial_cluster_type: Galaxy
 galaxy_data_option: transient
@@ -59,18 +56,18 @@ cluster_templates:
       type: transient
       roles: galaxyTools,galaxyData
       data_source: archive
-      archive_url: http://131.251.130.136/public/researcher/microgvl-fs-0.11-1-beta.tgz
-      archive_md5: b116da95872802dfab5a22d8caec0f4a
+      archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-galaxyfs-4.2.0.tar.gz
+      archive_md5: bc98a98379f70a5c3d81856c1fb27a4f
     - name: gvl
       type: transient
       data_source: archive
-      archive_url: http://131.251.130.136/public/researcher/microgvl-apps-0.11-1-beta-rebuilt.tgz
-      archive_md5: 5c039ffacfe96e875c82c4bc8eb10df1
+      archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-apps-4.2-2.tar.gz
+      archive_md5: 6843b57d92d6b79c417bad677a792efd
     - name: galaxyIndices
       type: transient
       roles: galaxyIndices
-      archive_url: https://s3.eu-central-1.amazonaws.com/cloudman-gvl-400-frankfurt/gvl-indices-blank-4.0.0.tar.gz
-      archive_md5: 09eadb352ef3be038221f4226edaadc8
+      archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-indices-blank-4.2.0.tar.gz
+      archive_md5: 0c53cc2804031b2d6e713e6ebcd272ba
   - name: Data
     filesystem_templates:
 """
