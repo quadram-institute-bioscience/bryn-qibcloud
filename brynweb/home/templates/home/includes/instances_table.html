@@ -33,7 +33,7 @@
               <li><a href="{% url 'home:stop' t.pk i.id %}">Stop</a></li>
               <li><a href="{% url 'home:reboot' t.pk i.id %}">Reboot</a></li>
             {% endif %}
-            <li><a href="{% url 'home:terminate' t.pk i.id %}"><span class="text-danger">Terminate</span></a></li>
+            <li><a href="{% url 'home:terminate' t.pk i.id %}" onclick="return false;"><span class="text-danger">Terminate</span></a></li>
           </ul>
         </div>
       </td>

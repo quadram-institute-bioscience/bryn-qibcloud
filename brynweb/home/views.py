@@ -59,7 +59,8 @@ def home(request):
 
         try:
             t.launch_form = LaunchServerForm()
-            t.launch_custom_form = LaunchImageServerForm(tenant.get_images(), tenant.get_keys())
+            available_keys = [key for key in tenant.get_keys() if key[0] != "cloudman"]
+            t.launch_custom_form = LaunchImageServerForm(tenant.get_images(), available_keys)
             t.tenant_access = tenant
             t.instances = list_instances(tenant)
         except Exception, e:

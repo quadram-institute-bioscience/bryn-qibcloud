@@ -5,6 +5,9 @@ from userdb.models import Team, Region
 import sys
 import yaml
 import pprint
+from dateutil.parser import parse as dateutilparse
+from dateutil.tz import *
+
 
 def list_instances(tenant):
     client = OpenstackClient(tenant.region.name,
@@ -36,9 +39,11 @@ def list_instances(tenant):
         except:
             flavor = 'unknown'
 
+        hcreated = dateutilparse(s.created)
+        
         servers.append({'id' : s.id,
                         'name' : s.name,
-                        'created' : s.created,
+                        'created' : hcreated,
                         'flavor' : flavor,
                         'status' : s.status,
                         'ip' : ip})

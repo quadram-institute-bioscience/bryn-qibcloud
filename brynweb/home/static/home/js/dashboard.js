@@ -94,6 +94,7 @@
   });
 
   $(document).ready(function () {
+    $('select option[value="cloudman"]').hide();
     // Initially hide SSH key fields (as required)
     $("form.launch-custom-form").each(function () {
       var form = $(this);
