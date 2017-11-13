@@ -31,5 +31,6 @@ urlpatterns = [
     url(r'^validate-email/(?P<uuid>[^/]+)$', views.validate_email,
         name='validate-email'),
     url(r'^institutions/typeahead/$', views.institution_typeahead,
-        name='institution_typeahead')
+        name='institution_typeahead'),
+    url(r'^active-users$', views.active_users, name='active-users')
 ]

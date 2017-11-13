@@ -6,10 +6,11 @@ from django.contrib.auth import (
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404, resolve_url
 from django.template.response import TemplateResponse
 from django.utils.http import is_safe_url
+from django.contrib.auth.decorators import user_passes_test
 
 from .forms import CustomUserCreationForm, TeamForm, InvitationForm
 from .models import (Institution, Team, TeamMember, Invitation, UserProfile,
@@ -204,3 +205,10 @@ def login(request):
     }
 
     return TemplateResponse(request, 'userdb/login.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def active_users(request):
+    recordset = TeamMember.objects.filter(team__verified=True)
+    txt = "\n".join(["%s\t%s\t%s\t%s\t%s" % (u.user.first_name, u.user.last_name, u.user.email, u.team.institution, u.team.name) for u in recordset])
+    return HttpResponse(txt, content_type='text/plain')
+
