@@ -14,7 +14,7 @@ class TeamAdmin(admin.ModelAdmin):
     list_filter = ('verified',)
 
     actions = ['verify_and_send_notification_email', 'create_warwick_tenant',
-               'create_bham_tenant', 'create_cardiff_tenant']
+               'create_bham_tenant', 'create_cardiff_tenant', 'create_swansea_tenant']
 
     def verify_and_send_notification_email(self, request, queryset):
         n = 0
@@ -44,6 +44,10 @@ class TeamAdmin(admin.ModelAdmin):
 
     def create_cardiff_tenant(self, request, queryset):
         self.create_tenant(Region.objects.get(name='cardiff'),
+                           request, queryset)
+
+    def create_swansea_tenant(self, request, queryset):
+        self.create_tenant(Region.objects.get(name='swansea'),
                            request, queryset)
 
     def setup_teams(self, request, queryset):
