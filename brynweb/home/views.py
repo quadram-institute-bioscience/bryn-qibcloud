@@ -51,11 +51,13 @@ def home(request):
             continue
 
         if region.name == 'bham':
-            t.horizon_endpoint = 'http://birmingham.climb.ac.uk'
+            t.horizon_endpoint = 'https://birmingham.climb.ac.uk'
         elif region.name == 'cardiff':
-            t.horizon_endpoint = 'http://cardiff.climb.ac.uk'
+            t.horizon_endpoint = 'https://cardiff.climb.ac.uk'
         elif region.name == 'warwick':
             t.horizon_endpoint = 'http://stack.warwick.climb.ac.uk'
+        elif region.name == 'swansea':
+            t.horizon_endpoint = 'https://swansea.climb.ac.uk'
 
         try:
             t.launch_form = LaunchServerForm()
