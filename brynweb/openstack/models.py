@@ -43,6 +43,11 @@ class Tenant(Model):
         nova = client.get_nova()
         return [(k.name, k.name) for k in nova.keypairs.list()]
 
+    def get_flavors(self):
+        client = self.get_client()
+        nova = client.get_nova()
+        return [(fl.name, fl.name) for fl in nova.flavors.list()]
+
     def get_auth_username(self):
         return self.get_tenant_name()
 
@@ -70,7 +75,7 @@ class Tenant(Model):
             return self.region.regionsettings.public_network_id
 
     def __str__(self):
-        return "%s - %s" % (self.get_tenant_name(), self.region)
+        return "%s" % (self.get_tenant_name())
 
 class ActionLog(Model):
     tenant = ForeignKey(Tenant)

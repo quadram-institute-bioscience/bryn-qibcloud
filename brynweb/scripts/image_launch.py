@@ -18,10 +18,8 @@ def launch_image(tenant, server_name, image_id, auth_key_name, auth_key_value, s
 
     tenant_id = tenant.created_tenant_id
 
-    if server_type == 'group':
-        fl = nova.flavors.find(name='climb.group')
-    else:
-        fl = nova.flavors.find(name='climb.user')
+    fl = nova.flavors.find(name=server_type)
+    
     cinder = client.get_cinder()
 
     volume = cinder.volumes.create(imageRef=image_id,

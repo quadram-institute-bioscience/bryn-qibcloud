@@ -30,6 +30,13 @@ class LaunchServerForm(forms.Form):
         validators=[RegexValidator(
           regex='^(?=.*[A-Z])(?=.*[0-9])(?=.*[a-z]).{8,}$',
           message="Weak password! At least one CAPITAL letter and one number required, minimum 8 characters.")])
+    
+    def __init__(self, flavors, *args, **kwargs):
+        super(LaunchServerForm, self).__init__(*args, **kwargs)
+        flavors_sorted = sorted(flavors, key=lambda i: i[1])
+        i = next((i for i, (x, y) in enumerate(flavors_sorted) if y == 'climb.user'), 0)
+        flavors_sorted[0], flavors_sorted[i] = flavors_sorted[i], flavors_sorted[0]
+        self.fields['server_type'].choices = flavors_sorted
 
 class LaunchImageServerForm(forms.Form):
     server_name = forms.CharField(
@@ -55,10 +62,14 @@ class LaunchImageServerForm(forms.Form):
         widget=forms.Textarea,
         required=False)
 
-    def __init__(self, images, keys, *args, **kwargs):
+    def __init__(self, images, flavors, keys, *args, **kwargs):
         super(LaunchImageServerForm, self).__init__(*args, **kwargs)
         self.fields['server_image'].choices = sorted(
             images, key=lambda i: i[1])
+        flavors_sorted = sorted(flavors, key=lambda i: i[1])
+        i = next((i for i, (x, y) in enumerate(flavors_sorted) if y == 'climb.user'), 0)
+        flavors_sorted[0], flavors_sorted[i] = flavors_sorted[i], flavors_sorted[0]
+        self.fields['server_type'].choices = flavors_sorted
         self.fields['server_key_name_choice'].choices = keys + [
             ('bryn:new', 'Make new key')]
 

@@ -84,29 +84,7 @@ cluster_templates:
 
     print userdata
 
-    ## steps
-    ## 1) find flavor
-    ## 2) find network
-    ## 3) allocate floating ip
-    ## 4) launch
-
-    #f = nova.floating_ips.create('public')
-    #print f
-
-    if server_type == 'group':
-        fl = nova.flavors.find(name='climb.group')
-    else:
-        fl = nova.flavors.find(name='climb.user')
-
-    #for i in client.get_glance().images.list():
-    #    if i.name == 'GVL 4.1.0':
-    #        image_id = i.id 
-
-    #for n in nova.networks.list():
-    #    print n.id, n.project_id
-    #    if hasattr(n, 'tenant_id'):
-    #        if n.tenant_id == default_tenant_id:
-    #            print n
+    fl = nova.flavors.find(name=server_type)
 
     cinder = client.get_cinder()
 

@@ -60,9 +60,9 @@ def home(request):
             t.horizon_endpoint = 'https://swansea.climb.ac.uk'
 
         try:
-            t.launch_form = LaunchServerForm()
+            t.launch_form = LaunchServerForm(tenant.get_flavors())
             available_keys = [key for key in tenant.get_keys() if key[0] != "cloudman"]
-            t.launch_custom_form = LaunchImageServerForm(tenant.get_images(), available_keys)
+            t.launch_custom_form = LaunchImageServerForm(tenant.get_images(),tenant.get_flavors(), available_keys)
             t.tenant_access = tenant
             t.instances = list_instances(tenant)
         except Exception, e:
@@ -161,7 +161,7 @@ def launch_server(request, launch_type, tenant, server_name, *args, **kwargs):
 def launch(request, teamid):
     tenant = validate_and_get_tenant(request, teamid)
 
-    f = LaunchServerForm(request.POST)
+    f = LaunchServerForm(tenant.get_flavors(), request.POST)
     if not f.is_valid():
         if request.is_ajax():
             return JsonResponse({'errors': f.errors}, status=400)
@@ -181,7 +181,7 @@ def launchcustom(request, teamid):
     tenant = validate_and_get_tenant(request, teamid)
 
     if request.method == 'POST':
-        f = LaunchImageServerForm(tenant.get_images(), tenant.get_keys(), request.POST)
+        f = LaunchImageServerForm(tenant.get_images(), tenant.get_flavors(),tenant.get_keys(), request.POST)
         if not f.is_valid():
             if request.is_ajax():
                 return JsonResponse({'errors': f.errors}, status=400)
