@@ -27,7 +27,7 @@ class Institution(Model):
 
 
 class Team(Model):
-    name = CharField(max_length=100, verbose_name="Group or team name",
+    name = CharField(max_length=50, verbose_name="Group or team name",
                      help_text="e.g. Bacterial pathogenomics group")
     creator = ForeignKey(User)
     created_at = DateTimeField(auto_now_add=True)
