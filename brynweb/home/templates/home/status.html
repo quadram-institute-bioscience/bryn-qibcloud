@@ -23,6 +23,8 @@
 
         {% for r in regions %}
         <h2>{{ r.description }}</h2>
+        {% if r.disabled %}<p class="text-danger"><i class="fa fa-warning"></i> Region disabled</p>{% endif %}
+        {% if r.disable_new_instances %}<p class="text-danger"><i class="fa fa-warning"></i> Launching new instances disabled</p>{% endif %}
 
         <p>Stats last updated {{ r.hypervisorstats.last_updated }}</p>
         <table class="table table-responsive">
