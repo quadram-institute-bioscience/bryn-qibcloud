@@ -61,8 +61,8 @@ cluster_templates:
     - name: gvl
       type: transient
       data_source: archive
-      archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-apps-4.2-3.tar.gz
-      archive_md5: 84045e4f0b8cd15d807beefd1c6aefca
+      archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-apps-4.2-4.tar.gz
+      archive_md5: 2291e3303ff1d93a678daab560a75db2
     - name: galaxyIndices
       type: transient
       roles: galaxyIndices
@@ -72,6 +72,8 @@ cluster_templates:
     filesystem_templates:
 """
 
+#     archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-apps-4.2-3.tar.gz
+#     archive_md5: 84045e4f0b8cd15d807beefd1c6aefca
 #     archive_url: http://s3.climb.ac.uk/gvl/microgvl-apps-0.11-1-beta.tgz
 #     archive_md5: 0c5421da6b4c432625159a9df6e12784
 #     archive_url: http://s3.climb.ac.uk/gvl/microgvl-apps-0.11-1-beta-rebuilt.tgz
