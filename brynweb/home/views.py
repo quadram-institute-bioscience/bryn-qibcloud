@@ -259,6 +259,17 @@ def terminate(request, teamid, uuid):
     else:
         return HttpResponseRedirect('/')
 
+def unshelve(request, teamid, uuid): 
+    tenant = validate_and_get_tenant(request, teamid)
+    try:
+        tenant.unshelve_server(uuid)
+        messages.success(request, 'Server unshelved.')
+    except Exception, e:
+        messages.error(request, e)
+    if request.is_ajax():
+        return JsonResponse(messages_to_json(request))
+    else:
+        return HttpResponseRedirect('/')
 
 @login_required
 def region_select(request):

@@ -63,6 +63,10 @@ class Tenant(Model):
         server = self.get_server(uuid)
         server.delete()
 
+    def unshelve_server(self, uuid):
+        server = self.get_server(uuid)
+        server.unshelve()
+
     def reboot_server(self, uuid):
         server = self.get_server(uuid)
         server.reboot(reboot_type='HARD') 
