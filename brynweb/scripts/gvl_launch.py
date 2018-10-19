@@ -56,13 +56,13 @@ cluster_templates:
       type: transient
       roles: galaxyTools,galaxyData
       data_source: archive
-      archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-galaxyfs-4.2.0.tar.gz
-      archive_md5: bc98a98379f70a5c3d81856c1fb27a4f
+      archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-galaxyfs-4.3.0.tar.gz
+      archive_md5: cdc3b58ae63fe6f176cc1f02c0e200e8
     - name: gvl
       type: transient
       data_source: archive
-      archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-apps-4.2-4.tar.gz
-      archive_md5: 2291e3303ff1d93a678daab560a75db2
+      archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-apps-4.3-1.tar.gz
+      archive_md5: 473064816ff2dbb3dd02b005e225af2f
     - name: galaxyIndices
       type: transient
       roles: galaxyIndices
