@@ -18,22 +18,14 @@ def list_instances(tenant):
     servers = []
 
     for s in nova.servers.list(detailed=True):
-        ip = 'unknown'
-        netname = tenant.region.regionsettings.public_network_name
-        if netname in s.addresses:
-            ip = s.addresses[netname][0]['addr']
-        else:
-            # Floating ips: remove once Cardiff has flat network
-            block = None
-            if 'tenant1-private' in s.addresses:
-                block = s.addresses['tenant1-private']
-            elif 'bryn:tenant-private' in s.addresses:
-                block = s.addresses['bryn:tenant-private']
-            if block:
-                for a in block:
-                    if a['OS-EXT-IPS:type'] == 'floating':
-                        ip = a['addr']
-
+        try:
+            netname = tenant.region.regionsettings.public_network_name
+            for network in s.addresses:
+                if netname in network:
+                    ip = s.addresses[network][0]['addr']
+        except:
+            ip = 'unknown'
+        
         try:
             flavor = nova.flavors.get(s.flavor['id']).name
         except:
