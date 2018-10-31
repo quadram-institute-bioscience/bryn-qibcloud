@@ -18,6 +18,7 @@ def list_instances(tenant):
     servers = []
 
     for s in nova.servers.list(detailed=True):
+        ip = 'unknown'
         try:
             netname = tenant.region.regionsettings.public_network_name
             for network in s.addresses:
