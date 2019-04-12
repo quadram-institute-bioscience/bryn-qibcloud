@@ -41,6 +41,10 @@ def launch_gvl(tenant, server_name, password, server_type='group'):
 
     generic_data = """cloud_type: openstack
 region_name: nova
+galaxy_conf_dir: /mnt/galaxy/galaxy-cloudman-conf
+configure_multiple_galaxy_processes: True
+handler_thread_count: 2
+web_thread_count: 1
 default_bucket_url: https://gvl-filesystem.s3.climb.ac.uk/
 use_object_store: false
 initial_cluster_type: Galaxy
@@ -56,13 +60,13 @@ cluster_templates:
       type: transient
       roles: galaxyTools,galaxyData
       data_source: archive
-      archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-galaxyfs-4.3.0.tar.gz
-      archive_md5: cdc3b58ae63fe6f176cc1f02c0e200e8
+      archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-galaxyfs-4.4.0.tar.gz
+      archive_md5: 6090b3fb5a7904b62c2bbe9351e755e6
     - name: gvl
       type: transient
       data_source: archive
-      archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-apps-4.3-1.tar.gz
-      archive_md5: 473064816ff2dbb3dd02b005e225af2f
+      archive_url: https://gvl-filesystem.s3.climb.ac.uk/gvl-apps-4.4.0-4.tar.gz
+      archive_md5: f109f7f31196d16864be96484769f794
     - name: galaxyIndices
       type: transient
       roles: galaxyIndices
