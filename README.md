@@ -1,5 +1,5 @@
-# bryn
-The CLIMB management web interface
+# bryn-qibcloud
+The QIBCloud management web interface. Based off MRC CLIMB Bryn: https://github.com/MRC-CLIMB/bryn
 
 ## setting up virtualenv
 
