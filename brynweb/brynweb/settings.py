@@ -6,12 +6,12 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = True
+DEBUG = int(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost 127.0.0.1 [::1]").split(" ")
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
+SECRET_KEY = os.environ.get("SECRET_KEY", 'youshouldchangethis')
 ADMINS = [('Nick', 'n.j.loman.bham.ac.uk')]
 SERVER_EMAIL = 'noreply@discourse.climb.ac.uk'
 DEFAULT_FROM_EMAIL = 'noreply@discourse.climb.ac.uk'
@@ -42,10 +42,13 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+#    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'pipeline.middleware.MinifyHTMLMiddleware',
 ]
+
+MIDDLEWARE = MIDDLEWARE_CLASSES
 
 ROOT_URLCONF = 'brynweb.urls'
 
@@ -122,7 +125,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -131,11 +134,14 @@ STATICFILES_FINDERS = [
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, '../static')
+
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+print(STATIC_ROOT)
+print(STATICFILES_DIRS[0])
 
 # Pipeline
 

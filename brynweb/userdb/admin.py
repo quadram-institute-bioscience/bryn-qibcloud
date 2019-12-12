@@ -29,7 +29,7 @@ class TeamAdmin(admin.ModelAdmin):
         for t in queryset:
             try:
                 setup_tenant(t, region)
-            except Exception, e:
+            except Exception as e:
                 self.message_user(request,
                                   "Failed to setup tenant %s: %s" % (t, e))
             n += 1

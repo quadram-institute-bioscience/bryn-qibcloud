@@ -6,7 +6,7 @@ from django.db.models import *
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.loader import render_to_string
 
 from phonenumber_field.modelfields import PhoneNumberField
@@ -29,7 +29,7 @@ class Institution(Model):
 class Team(Model):
     name = CharField(max_length=50, verbose_name="Group or team name",
                      help_text="e.g. Bacterial pathogenomics group")
-    creator = ForeignKey(User)
+    creator = ForeignKey(User, on_delete=PROTECT)
     created_at = DateTimeField(auto_now_add=True)
     position = CharField(
         max_length=50,
@@ -54,7 +54,7 @@ class Team(Model):
         "the Medical Research Council it would be very helpful if you can "
         "detail it here to assist with reporting use of CLIMB")
     verified = BooleanField(default=False)
-    default_region = ForeignKey(Region)
+    default_region = ForeignKey(Region, on_delete=PROTECT)
     tenants_available = BooleanField(default=False)
 
     def new_registration_admin_email(self):
@@ -103,8 +103,8 @@ class Team(Model):
 
 
 class TeamMember(Model):
-    team = ForeignKey(Team)
-    user = ForeignKey(User)
+    team = ForeignKey(Team, on_delete=PROTECT)
+    user = ForeignKey(User, on_delete=PROTECT)
     is_admin = BooleanField(default=False)
 
     def __str__(self):
@@ -153,7 +153,7 @@ class UserProfile(Model):
     validation_link = UUIDField(primary_key=True, default=uuid.uuid4,
                                 editable=False)
     email_validated = BooleanField(default=False)
-    current_region = ForeignKey(Region)
+    current_region = ForeignKey(Region, on_delete=PROTECT)
 
     def send_validation_link(self, user):
         self.user = user

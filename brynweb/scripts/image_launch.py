@@ -52,8 +52,8 @@ def launch_image(tenant, server_name, image_id, auth_key_name, auth_key_value, s
 
 def run():
     team = Team.objects.get(pk=1)
-    print team
+    print(team)
     tenant = Tenant.objects.filter(team=team, region=Region.objects.get(name='warwick'))[0]
-    print tenant
+    print(tenant)
     launch_image(tenant, 'test-ubuntu', '2ae0fe84-74d9-47fe-a744-408ec28026fd', 'launchkey', 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClUIKUlWckdyjIur2OhEFz4Xa2eKrpZe7ZgcVBnV3eUJi4WCPzB39aD4GvakwsUuKMGno3ipSCBI2Mcw2VfGD9oelCmPA/M6/cDvjijaQSgF5WBNoAbbaARtWyDSu+XMpbftNexmpc3CblamTm3DEgrOnhTcNJ+Imk+wBXpFUZOvfu/Ht/MBldbcgWp2RK8rgX+tCf5GUdgvA3Fz8YyvIOcIHIqSa9c9hfhes2hyLsrxe39norXUgsrgbMWlqqMYLc95TSYRFI+VYstoQ5b/6QHa/UloKkAR8LhVv8ntfRXVgvQtmUh3GzrYu326JW+kYSQ8hMX++v2w84vpL+50Rz nick@Nicks-MacBook-Pro.local', 'group')
  

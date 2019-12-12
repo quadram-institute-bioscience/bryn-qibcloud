@@ -45,8 +45,8 @@ def list_instances(tenant):
 
 def run():
     team = Team.objects.get(pk=1)
-    print team
+    print(team)
     tenant = Tenant.objects.filter(team=team, region=Region.objects.get(name='bham'))[0]
-    print tenant
+    print(tenant)
     list_instances(tenant)
  

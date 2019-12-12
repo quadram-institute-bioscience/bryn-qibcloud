@@ -1,15 +1,16 @@
 from __future__ import unicode_literals
-
+import sys
+sys.path.append("..")
 from django.db.models import *
 from django.contrib.auth.models import User
 from userdb.models import Team, Region
-from openstack.client import OpenstackClient
+from .client import OpenstackClient
 from django_slack import slack_message
-import uuid
+
 
 class Tenant(Model):
-    team = ForeignKey(Team)
-    region = ForeignKey(Region)
+    team = ForeignKey(Team, on_delete=PROTECT)
+    region = ForeignKey(Region, on_delete=PROTECT)
     created_tenant_id = CharField(max_length=50)
     auth_password = CharField(max_length=50)
     created_network_id = CharField(max_length=50)
@@ -81,9 +82,10 @@ class Tenant(Model):
     def __str__(self):
         return "%s" % (self.get_tenant_name())
 
+
 class ActionLog(Model):
-    tenant = ForeignKey(Tenant)
-    user = ForeignKey(User, default=None, null=True)
+    tenant = ForeignKey(Tenant, on_delete=PROTECT)
+    user = ForeignKey(User, default=None, null=True, on_delete=PROTECT)
     date = DateTimeField(auto_now_add=True)
     message = TextField()
     error = BooleanField()
@@ -102,6 +104,7 @@ class ActionLog(Model):
             error_type = 'SUCCESS'
         return "%s %s %s %s" % (self.date, error_type, self.tenant, self.message)
 
+
 class HypervisorStats(Model):
     region = OneToOneField(Region, on_delete=CASCADE)
 
@@ -119,8 +122,9 @@ class HypervisorStats(Model):
     vcpus = IntegerField()
     vcpus_used = IntegerField()
 
+
 class RegionSettings(Model):
-    region = OneToOneField(Region)
+    region = OneToOneField(Region, on_delete=PROTECT)
     gvl_image_id = CharField(max_length=50)
     public_network_name = CharField(max_length=50)
     public_network_id = CharField(max_length=50)
@@ -129,6 +133,7 @@ class RegionSettings(Model):
 
     def __str__(self):
         return str(self.region)
+
 
 def get_tenant_for_team(team, region):
     tenant = Tenant.objects.filter(team=team, region=Region.objects.get(name=region))

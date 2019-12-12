@@ -88,7 +88,7 @@ cluster_templates:
                  yaml.dump(cloud_specific_data, default_flow_style=False, allow_unicode=False) + \
                  yaml.dump(yaml.load(generic_data), default_flow_style=False, allow_unicode=False)
 
-    print userdata
+    print(userdata)
 
     fl = nova.flavors.find(name=server_type)
 
@@ -99,10 +99,10 @@ cluster_templates:
                                        size=120)
     cinder.volumes.set_bootable(volume, True)
 
-    print volume.id
-    for n in xrange(30):
+    print(volume.id)
+    for n in range(30):
         v = cinder.volumes.get(volume.id)
-        print v.status
+        print(v.status)
         if v.status == 'available':
             break
         time.sleep(1)
@@ -122,7 +122,7 @@ cluster_templates:
            userdata=userdata,
            key_name=key_name,
            block_device_mapping_v2=bdm)
-    print server
+    print(server)
 
     #time.sleep(3)
     #add_floating_ip(nova, tenant, server)

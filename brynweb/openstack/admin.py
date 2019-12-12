@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import Tenant, RegionSettings, ActionLog, HypervisorStats
+from .models import Tenant, RegionSettings, ActionLog, HypervisorStats
 
 class TenantAdmin(admin.ModelAdmin):
     pass

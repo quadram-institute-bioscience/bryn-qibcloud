@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import (
     REDIRECT_FIELD_NAME, authenticate, login as auth_login)

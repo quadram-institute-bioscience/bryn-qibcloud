@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.conf import settings
 
-from urlparse import parse_qs
+from urllib.parse import parse_qs
 
 @login_required
 def sso(request):
